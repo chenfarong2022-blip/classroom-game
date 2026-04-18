@@ -181,6 +181,65 @@
             animation: pulse 0.5s infinite;
         }
 
+        .play-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #FF6B6B 0%, #FFE66D 100%);
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .play-btn.playing {
+            background: #DC2626;
+        }
+
+        .audio-player {
+            margin-bottom: 25px;
+            display: none;
+        }
+
+        .audio-player.active {
+            display: block;
+        }
+
+        .progress-container {
+            position: relative;
+            height: 30px;
+            background: #E5E7EB;
+            border-radius: 15px;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(135deg, #4ECDC4 0%, #44a08d 100%);
+            border-radius: 15px;
+            width: 0%;
+            transition: width 0.1s;
+        }
+
+        .time-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--dark);
+            text-shadow: 0 0 3px white;
+        }
+
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.1); }
@@ -485,7 +544,17 @@
         <div class="question-section" id="questionSection">
             <div class="question-header">
                 <div class="question-num" id="questionNum">第 1 题</div>
+                <button class="play-btn" id="playBtn" onclick="playAudio()">▶ 播放听力</button>
                 <div class="timer-big" id="timerDisplay">⏱ 15</div>
+            </div>
+
+            <!-- Audio Player -->
+            <div class="audio-player" id="audioPlayer">
+                <audio id="audioElement" src=""></audio>
+                <div class="progress-container" id="progressContainer">
+                    <div class="progress-bar" id="progressBar"></div>
+                    <div class="time-display" id="timeDisplay">0:00 / 0:00</div>
+                </div>
             </div>
 
             <div class="question-text" id="questionText">
@@ -506,7 +575,7 @@
             </div>
 
             <div class="control-bar">
-                <button class="ctrl-btn secondary" id="stopAudioBtn" onclick="stopAudio()">⏹ 停止音频</button>
+                <button class="ctrl-btn secondary" id="stopAudioBtn" onclick="stopAudio()">⏹ 停止</button>
                 <button class="ctrl-btn primary" id="nextBtn" onclick="nextQuestion()">▶ 下一题</button>
                 <button class="ctrl-btn secondary" id="resultsBtn" onclick="showFinalResults()">🏆 最终结果</button>
             </div>
@@ -740,18 +809,132 @@
             oscillator.stop(audioContext.currentTime + 0.5);
         }
 
+        let audioElement = null;
+        let audioPlaying = false;
+        let audioUrl = '';
+
+        function playAudio() {
+            const btn = document.getElementById('playBtn');
+            const audioPlayer = document.getElementById('audioPlayer');
+
+            if (!audioElement) {
+                audioElement = document.getElementById('audioElement');
+            }
+
+            // 如果没有设置音频URL，播放提示音
+            if (!audioUrl) {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                playBeep();
+                showToast('请先设置听力音频URL');
+                return;
+            }
+
+            if (audioPlaying) {
+                audioElement.pause();
+                audioPlaying = false;
+                btn.textContent = '▶ 播放听力';
+                btn.classList.remove('playing');
+            } else {
+                audioElement.play();
+                audioPlaying = true;
+                btn.textContent = '⏸ 暂停';
+                btn.classList.add('playing');
+                audioPlayer.classList.add('active');
+            }
+        }
+
         function stopAudio() {
-            if (oscillator) {
-                oscillator.stop();
-                oscillator = null;
+            if (audioElement) {
+                audioElement.pause();
+                audioElement.currentTime = 0;
             }
             audioPlaying = false;
-            const btn = document.getElementById('audioBtn');
-            const status = document.getElementById('audioStatus');
-            btn.textContent = '▶';
+            const btn = document.getElementById('playBtn');
+            btn.textContent = '▶ 播放听力';
             btn.classList.remove('playing');
-            status.textContent = '音频已停止';
         }
+
+        function setAudioUrl(url) {
+            audioUrl = url;
+            if (audioElement) {
+                audioElement.src = url;
+            }
+            showToast('音频已设置');
+        }
+
+        // 初始化音频进度条
+        function initAudioProgress() {
+            const audio = document.getElementById('audioElement');
+            const progressBar = document.getElementById('progressBar');
+            const progressContainer = document.getElementById('progressContainer');
+            const timeDisplay = document.getElementById('timeDisplay');
+
+            if (!audio) return;
+
+            audio.addEventListener('timeupdate', () => {
+                const percent = (audio.currentTime / audio.duration) * 100;
+                progressBar.style.width = percent + '%';
+
+                const currentMin = Math.floor(audio.currentTime / 60);
+                const currentSec = Math.floor(audio.currentTime % 60);
+                const durationMin = Math.floor(audio.duration / 60) || 0;
+                const durationSec = Math.floor(audio.duration % 60) || 0;
+                timeDisplay.textContent = `${currentMin}:${currentSec.toString().padStart(2, '0')} / ${durationMin}:${durationSec.toString().padStart(2, '0')}`;
+            });
+
+            audio.addEventListener('ended', () => {
+                audioPlaying = false;
+                const btn = document.getElementById('playBtn');
+                btn.textContent = '▶ 播放听力';
+                btn.classList.remove('playing');
+                progressBar.style.width = '0%';
+            });
+
+            // 点击进度条跳转
+            progressContainer.addEventListener('click', (e) => {
+                const rect = progressContainer.getBoundingClientRect();
+                const percent = (e.clientX - rect.left) / rect.width;
+                audio.currentTime = percent * audio.duration;
+            });
+        }
+
+        function nextQuestion() {
+            showQuestion();
+        }
+
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+
+            let timeLeft = 15;
+            const timerEl = document.getElementById('timerDisplay');
+            timerEl.textContent = '⏱ ' + timeLeft;
+            timerEl.classList.remove('warning');
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerEl.textContent = '⏱ ' + timeLeft;
+
+                if (timeLeft <= 5) timerEl.classList.add('warning');
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    endQuestion();
+                }
+            }, 1000);
+        }
+
+        function endQuestion() {
+            const q = questions[currentQuestion - 1];
+            document.querySelectorAll('.option-item')[q.correct].classList.add('correct');
+            showToast('本题结束！');
+        }
+
+        // 页面加载完成后初始化
+        window.onload = function() {
+            init();
+            initAudioProgress();
+        };
 
         function nextQuestion() {
             showQuestion();
@@ -798,7 +981,7 @@
             alert('🏆 最终结果 🏆\n\n' + rankings.map((p, i) => `第${i+1}名: ${p.name} - ${p.score}分`).join('\n'));
         }
 
-        window.onload = init;
+        // window.onload = init;  // removed to avoid duplicate
     </script>
 </body>
 </html>
