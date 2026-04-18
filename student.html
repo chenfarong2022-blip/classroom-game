@@ -331,12 +331,10 @@
         </div>
 
         <div class="join-form" id="joinForm">
-            <div class="game-code-box">
-                <h3>🎮 游戏代码</h3>
-                <div class="game-code" id="displayGameCode">----</div>
+            <div class="input-group" id="gameCodeGroup">
+                <label>🎮 游戏代码</label>
+                <input type="text" id="gameCodeInput" placeholder="请输入4位游戏代码" maxlength="4" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
             </div>
-
-            <h3 style="text-align: center; margin-bottom: 20px;">🚪 加入游戏</h3>
 
             <div class="input-group">
                 <label>👤 您的昵称</label>
@@ -449,7 +447,8 @@
             const code = urlParams.get('game');
             if (code) {
                 gameCode = code;
-                document.getElementById('displayGameCode').textContent = code;
+                document.getElementById('gameCodeInput').value = code;
+                document.getElementById('gameCodeGroup').style.display = 'none';
             }
         };
 
@@ -482,12 +481,17 @@
                 return;
             }
 
-            if (!gameCode) {
-                gameCode = document.getElementById('displayGameCode').textContent;
+            const codeInput = document.getElementById('gameCodeInput').value.trim();
+            if (!gameCode && !codeInput) {
+                showToast('请输入4位游戏代码');
+                return;
+            }
+            if (codeInput) {
+                gameCode = codeInput;
             }
 
-            if (gameCode === '----' || !gameCode) {
-                showToast('请等待老师设置游戏代码');
+            if (gameCode === '----' || !gameCode || gameCode.length !== 4) {
+                showToast('请输入4位游戏代码');
                 return;
             }
 
