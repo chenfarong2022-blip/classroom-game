@@ -250,10 +250,15 @@
             font-weight: 900;
             text-align: center;
             line-height: 1.5;
-            margin-bottom: 40px;
+            margin-bottom: 35px;
             padding: 30px;
             background: #F3F4F6;
             border-radius: 15px;
+            display: none;
+        }
+
+        .question-text.show {
+            display: block;
         }
 
         .options-grid {
@@ -557,8 +562,8 @@
                 </div>
             </div>
 
-            <div class="question-text" id="questionText">
-                题目内容加载中...
+            <div class="question-text" id="questionText" onclick="toggleQuestionText()" style="cursor: pointer;">
+                点击显示题目内容
             </div>
 
             <div class="options-grid" id="optionsGrid"></div>
@@ -744,7 +749,9 @@
             document.getElementById('questionNum').textContent = `第 ${currentQuestion + 1} 题`;
 
             const q = questions[currentQuestion];
-            document.getElementById('questionText').textContent = q.text;
+            document.getElementById('questionText').dataset.text = q.text;
+            document.getElementById('questionText').textContent = '点击显示题目内容';
+            document.getElementById('questionText').classList.remove('show');
 
             document.getElementById('optionsGrid').innerHTML = q.options.map((opt, idx) => `
                 <div class="option-item" data-index="${idx}">
@@ -756,8 +763,8 @@
             document.getElementById('correctCount').textContent = '0';
             document.getElementById('wrongCount').textContent = '0';
 
-            // 不再自动开始计时，等待音频播放结束后再开始
-            // startTimer();
+            // 开始正计时
+            startTimer();
 
             if (gameRef) {
                 gameRef.update({
@@ -767,6 +774,17 @@
             }
 
             currentQuestion++;
+        }
+
+        function toggleQuestionText() {
+            const el = document.getElementById('questionText');
+            if (el.classList.contains('show')) {
+                el.classList.remove('show');
+                el.textContent = '点击显示题目内容';
+            } else {
+                el.classList.add('show');
+                el.textContent = el.dataset.text;
+            }
         }
 
         function toggleAudio() {
@@ -919,24 +937,21 @@
         function startTimer() {
             if (timerInterval) clearInterval(timerInterval);
 
-            let timeLeft = 30;
+            let elapsed = 0;
             const timerEl = document.getElementById('timerDisplay');
-            timerEl.textContent = '⏱ ' + timeLeft;
+            timerEl.textContent = '⏱ 0秒';
             timerEl.classList.remove('warning');
 
             timerInterval = setInterval(() => {
-                timeLeft--;
-                timerEl.textContent = '⏱ ' + timeLeft;
-
-                if (timeLeft <= 5) timerEl.classList.add('warning');
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    endQuestion();
-                }
+                elapsed++;
+                const mins = Math.floor(elapsed / 60);
+                const secs = elapsed % 60;
+                timerEl.textContent = `⏱ ${mins}:${secs.toString().padStart(2, '0')}`;
             }, 1000);
         }
 
         function endQuestion() {
+            if (timerInterval) clearInterval(timerInterval);
             const q = questions[currentQuestion - 1];
             document.querySelectorAll('.option-item')[q.correct].classList.add('correct');
             showToast('本题结束！');
