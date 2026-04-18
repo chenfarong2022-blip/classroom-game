@@ -254,10 +254,18 @@
             padding: 30px;
             background: #F3F4F6;
             border-radius: 15px;
+            cursor: pointer;
+        }
+
+        .question-text .hidden-content {
             display: none;
         }
 
-        .question-text.show {
+        .question-text.show .notice {
+            display: none;
+        }
+
+        .question-text.show .hidden-content {
             display: block;
         }
 
@@ -562,8 +570,9 @@
                 </div>
             </div>
 
-            <div class="question-text" id="questionText" onclick="toggleQuestionText()" style="cursor: pointer;">
-                点击显示题目内容
+            <div class="question-text" id="questionText" onclick="toggleQuestionText()">
+                <div class="notice">👆 点击显示题目内容</div>
+                <div class="hidden-content"></div>
             </div>
 
             <div class="options-grid" id="optionsGrid"></div>
@@ -749,8 +758,7 @@
             document.getElementById('questionNum').textContent = `第 ${currentQuestion + 1} 题`;
 
             const q = questions[currentQuestion];
-            document.getElementById('questionText').dataset.text = q.text;
-            document.getElementById('questionText').textContent = '点击显示题目内容';
+            document.querySelector('#questionText .hidden-content').textContent = q.text;
             document.getElementById('questionText').classList.remove('show');
 
             document.getElementById('optionsGrid').innerHTML = q.options.map((opt, idx) => `
@@ -778,13 +786,7 @@
 
         function toggleQuestionText() {
             const el = document.getElementById('questionText');
-            if (el.classList.contains('show')) {
-                el.classList.remove('show');
-                el.textContent = '点击显示题目内容';
-            } else {
-                el.classList.add('show');
-                el.textContent = el.dataset.text;
-            }
+            el.classList.toggle('show');
         }
 
         function toggleAudio() {
