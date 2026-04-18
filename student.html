@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生端 - 互动课堂</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF6B6B;
+            --secondary: #4ECDC4;
+            --accent: #FFE66D;
+            --dark: #2C3E50;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+            min-height: 100vh;
+            color: white;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 30px 0;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+
+        .join-form {
+            background: white;
+            border-radius: 25px;
+            padding: 30px;
+            color: var(--dark);
+        }
+
+        .game-code-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 25px;
+            color: white;
+        }
+
+        .game-code-box h3 { font-size: 14px; opacity: 0.9; margin-bottom: 10px; }
+        .game-code { font-size: 48px; font-weight: 900; letter-spacing: 8px; }
+
+        .input-group { margin-bottom: 20px; }
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            font-size: 18px;
+            font-family: inherit;
+        }
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .join-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #FF6B6B 0%, #FFE66D 100%);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .join-btn:hover { transform: translateY(-2px); }
+        .join-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        .waiting-screen {
+            display: none;
+            text-align: center;
+            padding: 40px 0;
+        }
+        .waiting-screen.active { display: block; }
+
+        .waiting-icon { font-size: 80px; margin-bottom: 20px; }
+        .waiting-text { font-size: 24px; font-weight: 700; margin-bottom: 10px; }
+        .waiting-hint { font-size: 16px; opacity: 0.7; }
+
+        .player-info {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 30px;
+            color: var(--dark);
+        }
+        .player-info h4 { font-size: 14px; color: #6B7280; margin-bottom: 10px; }
+        .your-name { font-size: 28px; font-weight: 700; color: var(--primary); }
+
+        .question-screen { display: none; }
+        .question-screen.active { display: block; }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            border-radius: 20px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+        .question-info .lesson { font-size: 18px; font-weight: 700; }
+        .question-info .score { font-size: 14px; color: #6B7280; margin-top: 5px; }
+
+        .timer {
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--primary);
+            background: #FFF5F5;
+            padding: 10px 20px;
+            border-radius: 12px;
+        }
+        .timer.warning {
+            background: #FEE2E2;
+            color: #DC2626;
+            animation: pulse 0.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .question-content {
+            background: white;
+            border-radius: 25px;
+            padding: 30px;
+            color: var(--dark);
+        }
+
+        .question-text {
+            font-size: 22px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option-btn {
+            padding: 20px;
+            border: 3px solid #E5E7EB;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            background: white;
+            font-family: inherit;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s;
+        }
+        .option-btn:hover:not(.disabled):not(.selected) {
+            border-color: var(--primary);
+            background: #FFF5F5;
+        }
+        .option-btn.selected {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, #FF6B6B 0%, #FFE66D 100%);
+            color: white;
+        }
+        .option-btn.correct {
+            border-color: #10B981;
+            background: #D1FAE5;
+            color: #065F46;
+        }
+        .option-btn.wrong {
+            border-color: #EF4444;
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+        .option-btn.disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .option-letter {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: #F3F4F6;
+            border-radius: 8px;
+            margin-right: 12px;
+            font-weight: 700;
+        }
+        .option-btn.selected .option-letter { background: rgba(255,255,255,0.3); }
+
+        .result-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        .result-overlay.active { display: flex; }
+
+        .result-card {
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            text-align: center;
+            color: var(--dark);
+            max-width: 350px;
+            width: 90%;
+        }
+
+        .result-icon { font-size: 80px; margin-bottom: 20px; }
+        .result-text { font-size: 28px; font-weight: 900; margin-bottom: 10px; }
+        .result-text.correct { color: #10B981; }
+        .result-text.wrong { color: #EF4444; }
+        .result-points { font-size: 24px; color: #6B7280; }
+        .result-score { font-size: 48px; font-weight: 900; color: var(--primary); margin: 15px 0; }
+        .result-ranking { font-size: 18px; color: #6B7280; margin-top: 10px; }
+
+        .continue-hint {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #9CA3AF;
+        }
+
+        .final-screen {
+            display: none;
+            text-align: center;
+            padding: 40px 0;
+        }
+        .final-screen.active { display: block; }
+
+        .final-title {
+            font-size: 32px;
+            font-weight: 900;
+            margin-bottom: 30px;
+            color: var(--accent);
+        }
+
+        .final-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FF6B6B 0%, #FFE66D 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            margin: 0 auto 20px;
+        }
+
+        .final-name { font-size: 28px; font-weight: 700; margin-bottom: 10px; }
+        .final-score { font-size: 48px; font-weight: 900; color: var(--accent); }
+        .final-rank { font-size: 20px; color: rgba(255,255,255,0.7); margin-top: 10px; }
+
+        .medal { font-size: 60px; margin-bottom: 10px; }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--dark);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1000;
+        }
+        .toast.show { opacity: 1; }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        .loading.active { display: block; }
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌟 互动课堂 🌟</h1>
+            <p>第七课 · 听力理解练习</p>
+        </div>
+
+        <div class="join-form" id="joinForm">
+            <div class="game-code-box">
+                <h3>🎮 游戏代码</h3>
+                <div class="game-code" id="displayGameCode">----</div>
+            </div>
+
+            <h3 style="text-align: center; margin-bottom: 20px;">🚪 加入游戏</h3>
+
+            <div class="input-group">
+                <label>👤 您的昵称</label>
+                <input type="text" id="playerName" placeholder="请输入昵称（2-8字）" maxlength="8">
+            </div>
+
+            <button class="join-btn" id="joinBtn" onclick="joinGame()">
+                🚀 加入游戏
+            </button>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <p>连接中...</p>
+        </div>
+
+        <div class="waiting-screen" id="waitingScreen">
+            <div class="waiting-icon">📱</div>
+            <div class="waiting-text">已加入成功！</div>
+            <div class="waiting-hint">等待老师开始答题...</div>
+
+            <div class="player-info">
+                <h4>您的昵称</h4>
+                <div class="your-name" id="yourName">--</div>
+            </div>
+        </div>
+
+        <div class="question-screen" id="questionScreen">
+            <div class="question-header">
+                <div class="question-info">
+                    <div class="lesson">📖 第 <span id="questionNum">1</span> 题</div>
+                    <div class="score">得分: <span id="currentScore">0</span></div>
+                </div>
+                <div class="timer" id="timer">⏱ 15</div>
+            </div>
+
+            <div class="question-content">
+                <div class="question-text" id="questionText">
+                    题目加载中...
+                </div>
+                <div class="options-grid" id="optionsGrid"></div>
+            </div>
+        </div>
+
+        <div class="final-screen" id="finalScreen">
+            <div class="final-title">🏆 游戏结束 🏆</div>
+            <div class="medal" id="finalMedal">🥇</div>
+            <div class="final-avatar">👤</div>
+            <div class="final-name" id="finalName">--</div>
+            <div class="final-score" id="finalScore">0</div>
+            <div class="final-rank" id="finalRank">最终排名第 --</div>
+        </div>
+    </div>
+
+    <div class="result-overlay" id="resultOverlay">
+        <div class="result-card">
+            <div class="result-icon" id="resultIcon">✅</div>
+            <div class="result-text" id="resultText">回答正确！</div>
+            <div class="result-points" id="resultPoints">+100 分</div>
+            <div class="result-score" id="resultScore">300</div>
+            <div class="result-ranking" id="resultRanking">当前排名第 5</div>
+            <div class="continue-hint">等待下一题...</div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyC-e4bjej0W0fwJ5qmXL30qRaBIJGPUUqc",
+            authDomain: "listeningclass-7ab57.firebaseapp.com",
+            databaseURL: "https://listeningclass-7ab57-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "listeningclass-7ab57",
+            storageBucket: "listeningclass-7ab57.firebasestorage.app",
+            messagingSenderId: "354373862045",
+            appId: "1:354373862045:web:51f2ed597ce60c56a00a74",
+            measurementId: "G-39LP3HJBE7"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const questions = [
+            { text: "不但我们喜欢流行歌曲，而且老师也喜欢。", options: ["我们不喜欢，老师喜欢", "我们喜欢，老师不喜欢", "我们和老师都喜欢", "我们和老师都不喜欢"], correct: 2 },
+            { text: "他的汉语说得真棒，跟中国人一样。", options: ["他的汉语说得不好", "他的汉语说得很好", "他不是中国人", "他说话很慢"], correct: 1 },
+            { text: "下课后我想去图书馆借本书。", options: ["他想去图书馆还书", "他想去图书馆看书", "他想去图书馆借书", "他想去图书馆工作"], correct: 2 },
+            { text: "今天天气真冷，我穿了三件衣服还觉得冷。", options: ["今天很热", "今天很冷", "他只穿了一件衣服", "他觉得天气很好"], correct: 1 },
+            { text: "我是从上个月开始学习游泳的。", options: ["我学习游泳一个月了", "我学习游泳很久了", "我从没学过游泳", "我上个月停止了游泳"], correct: 0 },
+            { text: "这个问题太难了，没有人能回答。", options: ["这个问题很简单", "有人能回答这个问题", "没有人能回答这个问题", "大家都回答了这个问题"], correct: 2 },
+            { text: "他虽然年纪小，但是懂得很多。", options: ["他年纪小，懂得也少", "他年纪大，懂得多", "他年纪小，但懂得多", "他年纪大，但懂得少"], correct: 2 },
+            { text: "如果你有空的话，明天来我家玩吧。", options: ["明天你必须来我家", "明天你有空就来我家", "明天你不能来我家", "你明天没空就不能来"], correct: 1 },
+            { text: "那家餐厅的菜又便宜又好吃。", options: ["那家餐厅的菜贵但好吃", "那家餐厅的菜便宜但不好吃", "那家餐厅的菜便宜又好吃", "那家餐厅的菜贵又难吃"], correct: 2 },
+            { text: "我每天骑自行车上班，大概需要半小时。", options: ["我开车上班需要半小时", "我走路上班需要半小时", "我骑自行车上班需要半小时", "我坐车上班需要半小时"], correct: 2 }
+        ];
+
+        let gameCode = '';
+        let playerId = '';
+        let playerName = '';
+        let currentScore = 0;
+        let hasAnswered = false;
+        let timerInterval = null;
+        let gameRef = null;
+        let currentQuestionIndex = -1;
+
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('game');
+            if (code) {
+                gameCode = code;
+                document.getElementById('displayGameCode').textContent = code;
+            }
+        };
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function showScreen(screenId) {
+            document.getElementById('joinForm').style.display = 'none';
+            document.getElementById('loading').classList.remove('active');
+            document.getElementById('waitingScreen').classList.remove('active');
+            document.getElementById('questionScreen').classList.remove('active');
+            document.getElementById('finalScreen').classList.remove('active');
+            
+            if (screenId) {
+                document.getElementById(screenId).style.display = screenId === 'loading' ? 'block' : screenId;
+                if (screenId === 'loading') {
+                    document.getElementById(screenId).classList.add('active');
+                }
+            }
+        }
+
+        async function joinGame() {
+            const name = document.getElementById('playerName').value.trim();
+            if (name.length < 2) {
+                showToast('请输入2-8字的昵称');
+                return;
+            }
+
+            if (!gameCode) {
+                gameCode = document.getElementById('displayGameCode').textContent;
+            }
+
+            if (gameCode === '----' || !gameCode) {
+                showToast('请等待老师设置游戏代码');
+                return;
+            }
+
+            playerName = name;
+            showScreen('loading');
+
+            try {
+                gameRef = db.ref('games/' + gameCode);
+                const snapshot = await gameRef.once('value');
+                const gameData = snapshot.val();
+
+                if (!gameData) {
+                    showToast('游戏不存在或已结束');
+                    showScreen('joinForm');
+                    return;
+                }
+
+                if (gameData.status === 'finished') {
+                    showToast('游戏已结束');
+                    showScreen('joinForm');
+                    return;
+                }
+
+                playerId = 'p_' + Date.now();
+                const playerRef = db.ref('games/' + gameCode + '/players/' + playerId);
+                await playerRef.set({ name: playerName });
+
+                const scoreRef = db.ref('games/' + gameCode + '/scores/' + playerId);
+                await scoreRef.set(0);
+
+                document.getElementById('yourName').textContent = playerName;
+                showScreen('waitingScreen');
+                showToast('加入成功！');
+
+                gameRef.on('value', onGameUpdate);
+
+            } catch (error) {
+                console.error('Join error:', error);
+                showToast('网络错误，请检查连接');
+                showScreen('joinForm');
+            }
+        }
+
+        function onGameUpdate(snapshot) {
+            const data = snapshot.val();
+            if (!data) return;
+
+            if (data.status === 'finished') {
+                showFinalResult(data);
+                return;
+            }
+
+            if (data.status === 'playing' && data.currentQuestion >= 0) {
+                if (data.currentQuestion !== currentQuestionIndex) {
+                    currentQuestionIndex = data.currentQuestion;
+                    hasAnswered = false;
+                    showQuestion(data.currentQuestion);
+                }
+            }
+        }
+
+        function showQuestion(qIndex) {
+            showScreen('questionScreen');
+            document.getElementById('resultOverlay').classList.remove('active');
+
+            const q = questions[qIndex];
+            document.getElementById('questionNum').textContent = qIndex + 1;
+            document.getElementById('questionText').textContent = q.text;
+            document.getElementById('currentScore').textContent = currentScore;
+
+            const optionsGrid = document.getElementById('optionsGrid');
+            optionsGrid.innerHTML = q.options.map((opt, idx) => `
+                <button class="option-btn" onclick="selectAnswer(${idx})">
+                    <span class="option-letter">${String.fromCharCode(65 + idx)}</span>
+                    ${opt}
+                </button>
+            `).join('');
+
+            startTimer(15);
+        }
+
+        function startTimer(seconds) {
+            if (timerInterval) clearInterval(timerInterval);
+            
+            let timeLeft = seconds;
+            const timerEl = document.getElementById('timer');
+            timerEl.textContent = '⏱ ' + timeLeft;
+            timerEl.classList.remove('warning');
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerEl.textContent = '⏱ ' + timeLeft;
+                
+                if (timeLeft <= 5) timerEl.classList.add('warning');
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    if (!hasAnswered) timeUp();
+                }
+            }, 1000);
+        }
+
+        async function selectAnswer(answer) {
+            if (hasAnswered) return;
+            hasAnswered = true;
+
+            if (timerInterval) clearInterval(timerInterval);
+
+            const options = document.querySelectorAll('.option-btn');
+            options.forEach(opt => opt.classList.add('disabled'));
+            options[answer].classList.add('selected');
+
+            const qIndex = currentQuestionIndex;
+            const q = questions[qIndex];
+            const isCorrect = answer === q.correct;
+            const pointsEarned = isCorrect ? 100 : 0;
+
+            if (isCorrect) {
+                currentScore += pointsEarned;
+            }
+
+            const answerRef = db.ref('games/' + gameCode + '/answers/' + qIndex + '/' + playerId);
+            await answerRef.set({
+                answer: answer,
+                isCorrect: isCorrect,
+                timeUsed: 15 - parseInt(document.getElementById('timer').textContent.replace('⏱ ', ''))
+            });
+
+            const scoreRef = db.ref('games/' + gameCode + '/scores/' + playerId);
+            await scoreRef.set(currentScore);
+
+            if (!isCorrect) {
+                options[answer].classList.remove('selected');
+                options[answer].classList.add('wrong');
+                options[q.correct].classList.add('correct');
+            }
+
+            showResultOverlay({
+                isCorrect: isCorrect,
+                pointsEarned: pointsEarned,
+                totalScore: currentScore
+            });
+        }
+
+        function timeUp() {
+            if (hasAnswered) return;
+            hasAnswered = true;
+
+            const options = document.querySelectorAll('.option-btn');
+            options.forEach(opt => opt.classList.add('disabled'));
+
+            const q = questions[currentQuestionIndex];
+            options[q.correct].classList.add('correct');
+        }
+
+        function showResultOverlay(data) {
+            const overlay = document.getElementById('resultOverlay');
+            
+            document.getElementById('resultIcon').textContent = data.isCorrect ? '✅' : '❌';
+            document.getElementById('resultText').textContent = data.isCorrect ? '回答正确！' : '回答错误';
+            document.getElementById('resultText').className = 'result-text ' + (data.isCorrect ? 'correct' : 'wrong');
+            document.getElementById('resultPoints').textContent = data.isCorrect ? '+100 分' : '+0 分';
+            document.getElementById('resultScore').textContent = data.totalScore;
+            document.getElementById('resultRanking').textContent = '当前排名第 --';
+
+            overlay.classList.add('active');
+
+            setTimeout(() => {
+                overlay.classList.remove('active');
+                document.getElementById('currentScore').textContent = currentScore;
+            }, 3000);
+        }
+
+        async function showFinalResult(data) {
+            const scores = data.scores || {};
+            const players = data.players || {};
+
+            const rankings = Object.entries(scores)
+                .map(([id, score]) => ({ id, name: players[id]?.name || '未知', score }))
+                .sort((a, b) => b.score - a.score);
+
+            const myRank = rankings.findIndex(p => p.id === playerId) + 1;
+
+            showScreen('finalScreen');
+            document.getElementById('finalScore').textContent = currentScore;
+            document.getElementById('finalRank').textContent = '最终排名第 ' + myRank;
+
+            if (myRank <= 3) {
+                document.getElementById('finalMedal').textContent = ['🥇', '🥈', '🥉'][myRank - 1];
+            } else {
+                document.getElementById('finalMedal').textContent = '🎉';
+            }
+        }
+    </script>
+</body>
+</html>

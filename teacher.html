@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教师端 - 互动课堂控制</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF6B6B;
+            --secondary: #4ECDC4;
+            --accent: #FFE66D;
+            --dark: #2C3E50;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+            min-height: 100vh;
+            color: white;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 25px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+
+        .game-code-section {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 25px;
+        }
+
+        .game-code-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 25px;
+            padding: 30px;
+            text-align: center;
+            flex: 1;
+        }
+
+        .game-code-box h3 { font-size: 16px; opacity: 0.9; margin-bottom: 15px; }
+        .game-code { font-size: 80px; font-weight: 900; letter-spacing: 15px; }
+
+        .qr-area {
+            margin-top: 20px;
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            display: inline-block;
+        }
+        .qr-area img { width: 150px; height: 150px; }
+        .qr-hint { color: white; font-size: 14px; margin-top: 10px; }
+
+        .stats-box {
+            background: linear-gradient(135deg, #4ECDC4 0%, #44a08d 100%);
+            border-radius: 25px;
+            padding: 30px;
+            text-align: center;
+            min-width: 200px;
+        }
+        .stats-box h3 { font-size: 16px; opacity: 0.9; margin-bottom: 15px; }
+        .stats-number { font-size: 72px; font-weight: 900; }
+        .stats-label { font-size: 18px; opacity: 0.9; }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 25px;
+        }
+
+        .question-display {
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            color: var(--dark);
+            min-height: 500px;
+        }
+
+        .waiting-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+            text-align: center;
+        }
+
+        .waiting-icon { font-size: 100px; margin-bottom: 25px; animation: bounce 1s infinite; }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .waiting-text { font-size: 32px; font-weight: 700; margin-bottom: 15px; }
+        .waiting-hint { font-size: 18px; opacity: 0.7; }
+
+        .question-content { display: none; }
+        .question-content.active { display: block; }
+
+        .question-number {
+            font-size: 20px;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .question-text {
+            font-size: 36px;
+            font-weight: 900;
+            text-align: center;
+            line-height: 1.5;
+            margin-bottom: 35px;
+        }
+
+        .options-display {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .option-display {
+            background: #F3F4F6;
+            border-radius: 18px;
+            padding: 25px;
+            font-size: 20px;
+            font-weight: 600;
+            border: 4px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .option-display.correct {
+            background: #D1FAE5;
+            border-color: #10B981;
+            color: #065F46;
+        }
+
+        .option-letter {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            background: white;
+            border-radius: 10px;
+            margin-right: 15px;
+            font-weight: 900;
+        }
+
+        .option-display.correct .option-letter {
+            background: #10B981;
+            color: white;
+        }
+
+        .timer-display {
+            font-size: 80px;
+            font-weight: 900;
+            color: var(--primary);
+            text-align: center;
+            margin: 30px 0;
+        }
+        .timer-display.warning { color: #DC2626; animation: pulse 0.5s infinite; }
+
+        .answer-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 400px;
+            margin: 30px auto 0;
+        }
+
+        .stat-box {
+            background: #F3F4F6;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+        .stat-value { font-size: 36px; font-weight: 900; }
+        .stat-label { font-size: 14px; color: #6B7280; margin-top: 5px; }
+        .stat-box.correct .stat-value { color: #10B981; }
+        .stat-box.wrong .stat-value { color: #EF4444; }
+
+        .results-display { display: none; text-align: center; }
+        .results-display.active { display: block; }
+
+        .results-title {
+            font-size: 42px;
+            font-weight: 900;
+            color: var(--accent);
+            margin-bottom: 40px;
+        }
+
+        .top-players {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .result-player { text-align: center; }
+        .result-player.first { order: 2; }
+        .result-player.second { order: 1; }
+        .result-player.third { order: 3; }
+
+        .result-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FF6B6B 0%, #FFE66D 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin: 0 auto 12px;
+        }
+        .result-player.first .result-avatar {
+            width: 110px;
+            height: 110px;
+            font-size: 55px;
+        }
+
+        .result-name { font-size: 22px; font-weight: 700; margin-bottom: 5px; }
+        .result-score { font-size: 28px; font-weight: 900; color: var(--primary); }
+        .result-medal { font-size: 50px; margin-bottom: 10px; }
+
+        .sidebar { display: flex; flex-direction: column; gap: 20px; }
+
+        .player-list-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            color: var(--dark);
+            flex: 1;
+        }
+
+        .player-list-card h3 {
+            font-size: 16px;
+            color: #6B7280;
+            margin-bottom: 15px;
+        }
+
+        .player-list { max-height: 350px; overflow-y: auto; }
+
+        .player-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            background: #F3F4F6;
+        }
+
+        .player-rank { font-weight: 900; color: var(--primary); margin-right: 12px; min-width: 30px; }
+        .player-name { flex: 1; font-weight: 600; }
+        .player-score { font-weight: 900; color: var(--secondary); }
+
+        .controls-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+        }
+
+        .control-btn {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 12px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+        .control-btn:last-child { margin-bottom: 0; }
+
+        .control-btn.primary {
+            background: linear-gradient(135deg, #4ECDC4 0%, #44a08d 100%);
+            color: white;
+        }
+        .control-btn.primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(78, 205, 196, 0.4);
+        }
+
+        .control-btn.secondary { background: #E5E7EB; color: var(--dark); }
+        .control-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--dark);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1000;
+        }
+        .toast.show { opacity: 1; }
+
+        @media (max-width: 1200px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .game-code-section { flex-direction: column; }
+            .options-display { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>互动课堂 - 教师端</h1>
+            <p>第七课 · 听力理解练习</p>
+        </div>
+
+        <div class="game-code-section">
+            <div class="game-code-box">
+                <h3>游戏代码</h3>
+                <div class="game-code" id="gameCode">----</div>
+                <div class="qr-area">
+                    <div id="qrcode"></div>
+                    <p class="qr-hint">学生扫码加入</p>
+                </div>
+            </div>
+
+            <div class="stats-box">
+                <h3>已加入人数</h3>
+                <div class="stats-number" id="playerCount">0</div>
+                <div class="stats-label">位同学</div>
+            </div>
+        </div>
+
+        <div class="main-layout">
+            <div class="question-display">
+                <div class="waiting-screen" id="waitingScreen">
+                    <div class="waiting-icon">📱</div>
+                    <div class="waiting-text">等待学生加入...</div>
+                    <div class="waiting-hint">请让学生扫描二维码或输入游戏代码加入</div>
+                </div>
+
+                <div class="question-content" id="questionContent">
+                    <div class="question-number" id="questionNumber">第 1 题</div>
+                    <div class="question-text" id="questionText">题目内容</div>
+                    <div class="options-display" id="optionsDisplay"></div>
+                    <div class="timer-display" id="timerDisplay">⏱ 15</div>
+                    <div class="answer-stats">
+                        <div class="stat-box correct">
+                            <div class="stat-value" id="correctCount">0</div>
+                            <div class="stat-label">正确</div>
+                        </div>
+                        <div class="stat-box wrong">
+                            <div class="stat-value" id="wrongCount">0</div>
+                            <div class="stat-label">错误</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="results-display" id="resultsDisplay">
+                    <div class="results-title">🏆 最终排名 🏆</div>
+                    <div class="top-players" id="topPlayersResults"></div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="player-list-card">
+                    <h3>📋 参赛选手</h3>
+                    <div class="player-list" id="playerList">
+                        <p style="color: #9CA3AF; text-align: center;">等待加入...</p>
+                    </div>
+                </div>
+
+                <div class="controls-card">
+                    <button class="control-btn primary" id="nextQuestionBtn" onclick="nextQuestion()" disabled>
+                        ▶️ 下一题
+                    </button>
+                    <button class="control-btn secondary" id="showResultsBtn" onclick="showFinalResults()" disabled>
+                        🏆 显示最终结果
+                    </button>
+                    <button class="control-btn secondary" onclick="resetGame()">
+                        🔄 重新开始
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyC-e4bjej0W0fwJ5qmXL30qRaBIJGPUUqc",
+            authDomain: "listeningclass-7ab57.firebaseapp.com",
+            databaseURL: "https://listeningclass-7ab57-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "listeningclass-7ab57",
+            storageBucket: "listeningclass-7ab57.firebasestorage.app",
+            messagingSenderId: "354373862045",
+            appId: "1:354373862045:web:51f2ed597ce60c56a00a74",
+            measurementId: "G-39LP3HJBE7"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const questions = [
+            { text: "不但我们喜欢流行歌曲，而且老师也喜欢。", options: ["我们不喜欢，老师喜欢", "我们喜欢，老师不喜欢", "我们和老师都喜欢", "我们和老师都不喜欢"], correct: 2 },
+            { text: "他的汉语说得真棒，跟中国人一样。", options: ["他的汉语说得不好", "他的汉语说得很好", "他不是中国人", "他说话很慢"], correct: 1 },
+            { text: "下课后我想去图书馆借本书。", options: ["他想去图书馆还书", "他想去图书馆看书", "他想去图书馆借书", "他想去图书馆工作"], correct: 2 },
+            { text: "今天天气真冷，我穿了三件衣服还觉得冷。", options: ["今天很热", "今天很冷", "他只穿了一件衣服", "他觉得天气很好"], correct: 1 },
+            { text: "我是从上个月开始学习游泳的。", options: ["我学习游泳一个月了", "我学习游泳很久了", "我从没学过游泳", "我上个月停止了游泳"], correct: 0 },
+            { text: "这个问题太难了，没有人能回答。", options: ["这个问题很简单", "有人能回答这个问题", "没有人能回答这个问题", "大家都回答了这个问题"], correct: 2 },
+            { text: "他虽然年纪小，但是懂得很多。", options: ["他年纪小，懂得也少", "他年纪大，懂得多", "他年纪小，但懂得多", "他年纪大，但懂得少"], correct: 2 },
+            { text: "如果你有空的话，明天来我家玩吧。", options: ["明天你必须来我家", "明天你有空就来我家", "明天你不能来我家", "你明天没空就不能来"], correct: 1 },
+            { text: "那家餐厅的菜又便宜又好吃。", options: ["那家餐厅的菜贵但好吃", "那家餐厅的菜便宜但不好吃", "那家餐厅的菜便宜又好吃", "那家餐厅的菜贵又难吃"], correct: 2 },
+            { text: "我每天骑自行车上班，大概需要半小时。", options: ["我开车上班需要半小时", "我走路上班需要半小时", "我骑自行车上班需要半小时", "我坐车上班需要半小时"], correct: 2 }
+        ];
+
+        let gameCode = '';
+        let currentQuestion = 0;
+        let timerInterval = null;
+        let gameRef = null;
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function generateGameCode() {
+            return Math.floor(1000 + Math.random() * 9000).toString();
+        }
+
+        async function init() {
+            gameCode = generateGameCode();
+            document.getElementById('gameCode').textContent = gameCode;
+
+            const joinUrl = window.location.origin + window.location.pathname.replace('teacher.html', 'student.html') + '?game=' + gameCode;
+            new QRCode(document.getElementById('qrcode'), {
+                text: joinUrl,
+                width: 128,
+                height: 128
+            });
+
+            window.history.replaceState({}, '', '?game=' + gameCode);
+
+            gameRef = db.ref('games/' + gameCode);
+            await gameRef.set({
+                status: 'waiting',
+                currentQuestion: -1,
+                totalQuestions: questions.length,
+                players: {},
+                scores: {},
+                answers: {},
+                createdAt: Date.now()
+            });
+
+            gameRef.on('value', onGameUpdate);
+            showToast('游戏已创建，等待学生加入');
+        }
+
+        function onGameUpdate(snapshot) {
+            const data = snapshot.val();
+            if (!data) return;
+
+            const playerCount = data.players ? Object.keys(data.players).length : 0;
+            document.getElementById('playerCount').textContent = playerCount;
+
+            if (data.players) {
+                const playersList = Object.entries(data.players).map(([id, p]) => ({ id, ...p }));
+                document.getElementById('playerList').innerHTML = playersList.map((p, idx) => `
+                    <div class="player-item">
+                        <span class="player-rank">#${idx + 1}</span>
+                        <span class="player-name">${p.name}</span>
+                        <span class="player-score">${data.scores && data.scores[p.id] || 0}</span>
+                    </div>
+                `).join('');
+
+                document.getElementById('nextQuestionBtn').disabled = playerCount === 0;
+            }
+
+            if (data.status === 'playing' && data.currentQuestion >= 0) {
+                if (!document.getElementById('questionContent').classList.contains('active')) {
+                    displayQuestion(data.currentQuestion);
+                }
+            }
+        }
+
+        function displayQuestion(qIndex) {
+            document.getElementById('waitingScreen').style.display = 'none';
+            document.getElementById('resultsDisplay').classList.remove('active');
+            document.getElementById('questionContent').classList.add('active');
+
+            const q = questions[qIndex];
+            document.getElementById('questionNumber').textContent = `第 ${qIndex + 1} 题`;
+            document.getElementById('questionText').textContent = q.text;
+
+            document.getElementById('optionsDisplay').innerHTML = q.options.map((opt, idx) => `
+                <div class="option-display" data-index="${idx}">
+                    <span class="option-letter">${String.fromCharCode(65 + idx)}</span>
+                    ${opt}
+                </div>
+            `).join('');
+
+            document.getElementById('correctCount').textContent = '0';
+            document.getElementById('wrongCount').textContent = '0';
+
+            startTimer();
+        }
+
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+
+            let timeLeft = 15;
+            const timerEl = document.getElementById('timerDisplay');
+            timerEl.textContent = '⏱ ' + timeLeft;
+            timerEl.classList.remove('warning');
+
+            timerInterval = setInterval(async () => {
+                timeLeft--;
+                timerEl.textContent = '⏱ ' + timeLeft;
+
+                if (timeLeft <= 5) timerEl.classList.add('warning');
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    endQuestion();
+                }
+            }, 1000);
+        }
+
+        function endQuestion() {
+            const q = questions[currentQuestion];
+            document.querySelectorAll('.option-display')[q.correct].classList.add('correct');
+            document.getElementById('correctCount').textContent = '0';
+            document.getElementById('wrongCount').textContent = '0';
+            showToast('本题结束！');
+            currentQuestion++;
+
+            if (currentQuestion >= questions.length) {
+                document.getElementById('nextQuestionBtn').disabled = true;
+            }
+        }
+
+        async function nextQuestion() {
+            if (currentQuestion >= questions.length) {
+                showToast('已是最后一题！');
+                return;
+            }
+
+            await gameRef.update({
+                status: 'playing',
+                currentQuestion: currentQuestion,
+                questionStartedAt: Date.now(),
+                answers: {}
+            });
+
+            document.getElementById('showResultsBtn').disabled = false;
+        }
+
+        async function showFinalResults() {
+            await gameRef.update({ status: 'finished' });
+
+            const data = (await gameRef.once('value')).val();
+            const scores = data.scores || {};
+            const players = data.players || {};
+
+            const rankings = Object.entries(scores)
+                .map(([id, score]) => ({ id, name: players[id]?.name || '未知', score }))
+                .sort((a, b) => b.score - a.score)
+                .slice(0, 5);
+
+            document.getElementById('questionContent').classList.remove('active');
+            document.getElementById('resultsDisplay').classList.add('active');
+
+            const medals = ['🥇', '🥈', '🥉'];
+            document.getElementById('topPlayersResults').innerHTML = rankings.slice(0, 3).map((p, idx) => `
+                <div class="result-player ${['second', 'first', 'third'][idx]}">
+                    <div class="result-medal">${medals[idx]}</div>
+                    <div class="result-avatar">👤</div>
+                    <div class="result-name">${p.name}</div>
+                    <div class="result-score">${p.score} 分</div>
+                </div>
+            `).join('');
+        }
+
+        async function resetGame() {
+            if (!confirm('确定要重新开始吗？')) return;
+            await gameRef.remove();
+            currentQuestion = 0;
+            window.location.reload();
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
