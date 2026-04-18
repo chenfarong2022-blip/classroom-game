@@ -165,6 +165,20 @@
             line-height: 1.6;
         }
 
+        .show-question-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            margin-bottom: 15px;
+        }
+
         .options-grid {
             display: flex;
             flex-direction: column;
@@ -368,13 +382,12 @@
                     <div class="lesson">📖 第 <span id="questionNum">1</span> 题</div>
                     <div class="score">得分: <span id="currentScore">0</span></div>
                 </div>
-                <div class="timer" id="timer">⏱ 15</div>
+                <div class="timer" id="timer">⏱ 0:00</div>
             </div>
 
             <div class="question-content">
-                <div class="question-text" id="questionText">
-                    题目加载中...
-                </div>
+                <button class="show-question-btn" id="showQuestionBtn" onclick="toggleQuestionText()">👁 显示听力原文</button>
+                <div class="question-text" id="questionText" style="display:none;"></div>
                 <div class="options-grid" id="optionsGrid"></div>
             </div>
         </div>
@@ -568,7 +581,10 @@
 
             const q = questions[qIndex];
             document.getElementById('questionNum').textContent = qIndex + 1;
+            document.getElementById('questionText').dataset.text = q.text;
             document.getElementById('questionText').textContent = q.text;
+            document.getElementById('questionText').style.display = 'none';
+            document.getElementById('showQuestionBtn').style.display = 'block';
             document.getElementById('currentScore').textContent = currentScore;
 
             const optionsGrid = document.getElementById('optionsGrid');
@@ -580,6 +596,18 @@
             `).join('');
 
             startTimer();
+        }
+
+        function toggleQuestionText() {
+            const textEl = document.getElementById('questionText');
+            const btnEl = document.getElementById('showQuestionBtn');
+            if (textEl.style.display === 'none') {
+                textEl.style.display = 'block';
+                btnEl.textContent = '🙈 隐藏听力原文';
+            } else {
+                textEl.style.display = 'none';
+                btnEl.textContent = '👁 显示听力原文';
+            }
         }
 
         function startTimer() {
