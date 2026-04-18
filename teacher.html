@@ -658,17 +658,27 @@
 
             const joinUrl = window.location.origin + window.location.pathname.replace('teacher.html', 'student.html') + '?game=' + gameCode;
 
-            new QRCode(document.getElementById('qrcode'), {
-                text: joinUrl,
-                width: 120,
-                height: 120
-            });
-
-            new QRCode(document.getElementById('overlayQrcode'), {
-                text: joinUrl,
-                width: 150,
-                height: 150
-            });
+            // 生成二维码
+            const qrcodeEl = document.getElementById('qrcode');
+            const overlayQrEl = document.getElementById('overlayQrcode');
+            
+            if (qrcodeEl) {
+                qrcodeEl.innerHTML = '';
+                new QRCode(qrcodeEl, {
+                    text: joinUrl,
+                    width: 120,
+                    height: 120
+                });
+            }
+            
+            if (overlayQrEl) {
+                overlayQrEl.innerHTML = '';
+                new QRCode(overlayQrEl, {
+                    text: joinUrl,
+                    width: 150,
+                    height: 150
+                });
+            }
 
             window.history.replaceState({}, '', '?game=' + gameCode);
 
