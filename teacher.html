@@ -651,7 +651,42 @@
         function startGame() {
             document.getElementById('waitingOverlay').classList.add('hidden');
             document.getElementById('questionSection').classList.add('active');
+            currentQuestion = 0;
+            showQuestion();
             showToast('游戏开始！');
+        }
+
+        function showQuestion() {
+            if (currentQuestion >= questions.length) {
+                showToast('所有题目已结束！');
+                return;
+            }
+
+            document.getElementById('questionNum').textContent = `第 ${currentQuestion + 1} 题`;
+
+            const q = questions[currentQuestion];
+            document.getElementById('questionText').textContent = q.text;
+
+            document.getElementById('optionsGrid').innerHTML = q.options.map((opt, idx) => `
+                <div class="option-item" data-index="${idx}">
+                    <span class="option-letter">${String.fromCharCode(65 + idx)}</span>
+                    ${opt}
+                </div>
+            `).join('');
+
+            document.getElementById('correctCount').textContent = '0';
+            document.getElementById('wrongCount').textContent = '0';
+
+            startTimer();
+
+            if (gameRef) {
+                gameRef.update({
+                    status: 'playing',
+                    currentQuestion: currentQuestion
+                });
+            }
+
+            currentQuestion++;
         }
 
         function toggleAudio() {
@@ -719,36 +754,7 @@
         }
 
         function nextQuestion() {
-            if (currentQuestion >= questions.length) {
-                showToast('已是最后一题！');
-                return;
-            }
-
-            document.getElementById('questionNum').textContent = `第 ${currentQuestion + 1} 题`;
-
-            const q = questions[currentQuestion];
-            document.getElementById('questionText').textContent = q.text;
-
-            document.getElementById('optionsGrid').innerHTML = q.options.map((opt, idx) => `
-                <div class="option-item" data-index="${idx}">
-                    <span class="option-letter">${String.fromCharCode(65 + idx)}</span>
-                    ${opt}
-                </div>
-            `).join('');
-
-            document.getElementById('correctCount').textContent = '0';
-            document.getElementById('wrongCount').textContent = '0';
-
-            startTimer();
-
-            if (gameRef) {
-                gameRef.update({
-                    status: 'playing',
-                    currentQuestion: currentQuestion
-                });
-            }
-
-            currentQuestion++;
+            showQuestion();
         }
 
         function startTimer() {
