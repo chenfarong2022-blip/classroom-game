@@ -579,26 +579,22 @@
                 </button>
             `).join('');
 
-            startTimer(15);
+            startTimer();
         }
 
-        function startTimer(seconds) {
+        function startTimer() {
             if (timerInterval) clearInterval(timerInterval);
             
-            let timeLeft = seconds;
+            let elapsed = 0;
             const timerEl = document.getElementById('timer');
-            timerEl.textContent = '⏱ ' + timeLeft;
+            timerEl.textContent = '⏱ 0:00';
             timerEl.classList.remove('warning');
 
             timerInterval = setInterval(() => {
-                timeLeft--;
-                timerEl.textContent = '⏱ ' + timeLeft;
-                
-                if (timeLeft <= 5) timerEl.classList.add('warning');
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    if (!hasAnswered) timeUp();
-                }
+                elapsed++;
+                const mins = Math.floor(elapsed / 60);
+                const secs = elapsed % 60;
+                timerEl.textContent = `⏱ ${mins}:${secs.toString().padStart(2, '0')}`;
             }, 1000);
         }
 
