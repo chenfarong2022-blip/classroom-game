@@ -461,15 +461,20 @@
 
         function showScreen(screenId) {
             document.getElementById('joinForm').style.display = 'none';
+            document.getElementById('loading').style.display = 'none';
             document.getElementById('loading').classList.remove('active');
             document.getElementById('waitingScreen').classList.remove('active');
+            document.getElementById('waitingScreen').style.display = 'none';
             document.getElementById('questionScreen').classList.remove('active');
+            document.getElementById('questionScreen').style.display = 'none';
             document.getElementById('finalScreen').classList.remove('active');
+            document.getElementById('finalScreen').style.display = 'none';
             
             if (screenId) {
-                document.getElementById(screenId).style.display = screenId === 'loading' ? 'block' : screenId;
+                const el = document.getElementById(screenId);
+                el.style.display = 'block';
                 if (screenId === 'loading') {
-                    document.getElementById(screenId).classList.add('active');
+                    el.classList.add('active');
                 }
             }
         }
@@ -526,7 +531,11 @@
                 showScreen('waitingScreen');
                 showToast('加入成功！');
 
-                gameRef.on('value', onGameUpdate);
+                // 监听游戏状态变化
+                gameRef.on('value', onGameUpdate, (error) => {
+                    console.error('Firebase listener error:', error);
+                    showToast('连接断开，正在重连...');
+                });
 
             } catch (error) {
                 console.error('Join error:', error);
