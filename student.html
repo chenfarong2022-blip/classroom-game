@@ -386,8 +386,7 @@
             </div>
 
             <div class="question-content">
-                <button class="show-question-btn" id="showQuestionBtn" onclick="toggleQuestionText()">👁 显示听力原文</button>
-                <div class="question-text" id="questionText" style="display:none;"></div>
+                <div class="question-text" id="questionText"></div>
                 <div class="options-grid" id="optionsGrid"></div>
             </div>
         </div>
@@ -581,10 +580,6 @@
 
             const q = questions[qIndex];
             document.getElementById('questionNum').textContent = qIndex + 1;
-            document.getElementById('questionText').dataset.text = q.text;
-            document.getElementById('questionText').textContent = q.text;
-            document.getElementById('questionText').style.display = 'none';
-            document.getElementById('showQuestionBtn').style.display = 'block';
             document.getElementById('currentScore').textContent = currentScore;
 
             const optionsGrid = document.getElementById('optionsGrid');
@@ -596,18 +591,6 @@
             `).join('');
 
             startTimer();
-        }
-
-        function toggleQuestionText() {
-            const textEl = document.getElementById('questionText');
-            const btnEl = document.getElementById('showQuestionBtn');
-            if (textEl.style.display === 'none') {
-                textEl.style.display = 'block';
-                btnEl.textContent = '🙈 隐藏听力原文';
-            } else {
-                textEl.style.display = 'none';
-                btnEl.textContent = '👁 显示听力原文';
-            }
         }
 
         function startTimer() {
