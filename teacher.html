@@ -756,7 +756,8 @@
             document.getElementById('correctCount').textContent = '0';
             document.getElementById('wrongCount').textContent = '0';
 
-            startTimer();
+            // 不再自动开始计时，等待音频播放结束后再开始
+            // startTimer();
 
             if (gameRef) {
                 gameRef.update({
@@ -899,6 +900,8 @@
                 btn.textContent = '▶ 播放听力';
                 btn.classList.remove('playing');
                 progressBar.style.width = '0%';
+                // 音频播放结束后开始倒计时
+                startTimer();
             });
 
             // 点击进度条跳转
@@ -916,7 +919,7 @@
         function startTimer() {
             if (timerInterval) clearInterval(timerInterval);
 
-            let timeLeft = 15;
+            let timeLeft = 30;
             const timerEl = document.getElementById('timerDisplay');
             timerEl.textContent = '⏱ ' + timeLeft;
             timerEl.classList.remove('warning');
@@ -944,36 +947,6 @@
             init();
             initAudioProgress();
         };
-
-        function nextQuestion() {
-            showQuestion();
-        }
-
-        function startTimer() {
-            if (timerInterval) clearInterval(timerInterval);
-
-            let timeLeft = 15;
-            const timerEl = document.getElementById('timerDisplay');
-            timerEl.textContent = '⏱ ' + timeLeft;
-            timerEl.classList.remove('warning');
-
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                timerEl.textContent = '⏱ ' + timeLeft;
-
-                if (timeLeft <= 5) timerEl.classList.add('warning');
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    endQuestion();
-                }
-            }, 1000);
-        }
-
-        function endQuestion() {
-            const q = questions[currentQuestion - 1];
-            document.querySelectorAll('.option-item')[q.correct].classList.add('correct');
-            showToast('本题结束！');
-        }
 
         async function showFinalResults() {
             await gameRef.update({ status: 'finished' });
