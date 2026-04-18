@@ -589,6 +589,7 @@
             </div>
 
             <div class="control-bar">
+                <button class="ctrl-btn secondary" id="prevBtn" onclick="prevQuestion()" style="display:none;">◀ 上一页</button>
                 <button class="ctrl-btn secondary" id="stopAudioBtn" onclick="stopAudio()">⏹ 停止</button>
                 <button class="ctrl-btn primary" id="nextBtn" onclick="nextQuestion()">▶ 下一题</button>
                 <button class="ctrl-btn secondary" id="resultsBtn" onclick="showFinalResults()">🏆 最终结果</button>
@@ -771,6 +772,9 @@
             document.getElementById('correctCount').textContent = '0';
             document.getElementById('wrongCount').textContent = '0';
 
+            // 显示/隐藏上一页按钮
+            document.getElementById('prevBtn').style.display = currentQuestion > 0 ? 'inline-block' : 'none';
+
             // 开始正计时
             startTimer();
 
@@ -782,6 +786,12 @@
             }
 
             currentQuestion++;
+        }
+
+        function prevQuestion() {
+            if (currentQuestion <= 1) return;
+            currentQuestion -= 2;
+            showQuestion();
         }
 
         function toggleQuestionText() {
