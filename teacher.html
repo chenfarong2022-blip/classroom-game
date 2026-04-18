@@ -91,58 +91,6 @@
             color: #6B7280;
         }
 
-        /* Audio Controls */
-        .audio-controls {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 20px;
-            padding: 25px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-        }
-
-        .audio-btn {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            border: none;
-            background: white;
-            color: var(--primary);
-            font-size: 30px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-        }
-
-        .audio-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-        }
-
-        .audio-btn.playing {
-            background: var(--primary);
-            color: white;
-        }
-
-        .audio-info {
-            color: white;
-            text-align: left;
-        }
-
-        .audio-title {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        .audio-status {
-            font-size: 14px;
-            opacity: 0.8;
-        }
-
         /* Question Section */
         .question-section {
             background: white;
@@ -536,13 +484,7 @@
                 <div class="player-count-label">位同学已加入</div>
             </div>
 
-            <div class="audio-controls">
-                <button class="audio-btn" id="audioBtn" onclick="toggleAudio()">▶</button>
-                <div class="audio-info">
-                    <div class="audio-title">听力音频</div>
-                    <div class="audio-status" id="audioStatus">点击播放音频</div>
-                </div>
-            </div>
+
         </div>
 
         <!-- Player List -->
@@ -652,8 +594,6 @@
         let timerInterval = null;
         let gameRef = null;
         let audioPlaying = false;
-        let audioContext = null;
-        let oscillator = null;
 
         function showToast(message) {
             const toast = document.getElementById('toast');
@@ -799,57 +739,6 @@
             el.classList.toggle('show');
         }
 
-        function toggleAudio() {
-            const btn = document.getElementById('audioBtn');
-            const status = document.getElementById('audioStatus');
-
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            }
-
-            if (audioPlaying) {
-                if (oscillator) {
-                    oscillator.stop();
-                    oscillator = null;
-                }
-                audioPlaying = false;
-                btn.textContent = '▶';
-                btn.classList.remove('playing');
-                status.textContent = '点击播放音频';
-            } else {
-                playBeep();
-                audioPlaying = true;
-                btn.textContent = '⏸';
-                btn.classList.add('playing');
-                status.textContent = '播放中...';
-
-                setTimeout(() => {
-                    if (audioPlaying) {
-                        toggleAudio();
-                    }
-                }, 3000);
-            }
-        }
-
-        function playBeep() {
-            if (!audioContext) return;
-
-            oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-
-            oscillator.frequency.value = 800;
-            oscillator.type = 'sine';
-
-            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.5);
-        }
-
         let audioElement = null;
         let audioUrl = '';
 
@@ -861,12 +750,8 @@
                 audioElement = document.getElementById('audioElement');
             }
 
-            // 如果没有设置音频URL，播放提示音
+            // 如果没有设置音频URL，提示用户
             if (!audioUrl) {
-                if (!audioContext) {
-                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                }
-                playBeep();
                 showToast('请先设置听力音频URL');
                 return;
             }
