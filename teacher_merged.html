@@ -3749,7 +3749,8 @@
 
                 if (gameRef && newSlide >= 3) {
                     const qIndex = questionMap[newSlide];
-                    if (qIndex !== undefined && qIndex !== lastQIndexSent) {
+                    console.log('Slide changed to:', newSlide, '-> qIndex:', qIndex, 'lastSent:', lastQIndexSent);
+                    if (qIndex !== undefined) {
                         lastQIndexSent = qIndex;
                         gameRef.update({
                             status: 'playing',
@@ -3938,7 +3939,8 @@
         }
         
         async function startGame() {
-            await gameRef.update({ status: 'playing' });
+            lastQIndexSent = -1;
+            await gameRef.update({ status: 'playing', currentQuestion: -1 });
             document.getElementById('gameControl').classList.remove('active');
             changeSlide(2);
         }
