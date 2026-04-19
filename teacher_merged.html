@@ -3719,9 +3719,9 @@
 
         function updateSlide() {
             const slides = document.querySelectorAll('.slide');
-            slides.forEach((slide, index) => {
+            slides.forEach((slide) => {
                 slide.classList.remove('active');
-                if (index + 1 === currentSlide) {
+                if (parseInt(slide.getAttribute('data-slide')) === currentSlide) {
                     slide.classList.add('active');
                 }
             });
