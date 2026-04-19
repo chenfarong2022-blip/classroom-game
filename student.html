@@ -558,7 +558,12 @@
 
         function onGameUpdate(snapshot) {
             const data = snapshot.val();
-            if (!data) return;
+            if (!data) {
+                console.log('Firebase data is null');
+                return;
+            }
+
+            console.log('Status:', data.status, 'CurrentQuestion:', data.currentQuestion);
 
             if (data.status === 'finished') {
                 showFinalResult(data);
@@ -567,10 +572,13 @@
 
             if (data.status === 'playing' && data.currentQuestion >= 0) {
                 if (data.currentQuestion !== currentQuestionIndex) {
+                    console.log('Student updating to question:', data.currentQuestion);
                     currentQuestionIndex = data.currentQuestion;
                     hasAnswered = false;
                     showQuestion(data.currentQuestion);
                 }
+            } else if (data.status === 'waiting') {
+                console.log('Game is waiting...');
             }
         }
 
