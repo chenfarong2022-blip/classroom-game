@@ -271,6 +271,20 @@
             color: #9CA3AF;
         }
 
+        .submit-btn {
+            transition: all 0.3s;
+        }
+        .submit-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(255,107,107,0.4);
+        }
+        .submit-btn:disabled {
+            background: #E5E7EB;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
         .final-screen {
             display: none;
             text-align: center;
@@ -388,6 +402,8 @@
             <div class="question-content">
                 <div class="question-text" id="questionText"></div>
                 <div class="options-grid" id="optionsGrid"></div>
+                <button class="submit-btn" id="submitBtn" onclick="submitAnswer()" style="display:none; margin-top: 20px; width: 100%; padding: 15px; font-size: 18px; background: linear-gradient(135deg, #FF6B6B 0%, #FFE66D 100%); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: bold;">提交答案</button>
+                <div class="waiting-hint" id="waitingHint" style="display:none; text-align: center; color: #6B7280; margin-top: 15px; font-size: 16px;">✅ 已提交，等待老师公布结果...</div>
             </div>
         </div>
 
@@ -589,9 +605,14 @@
                     console.log('Student updating to question:', data.currentQuestion);
                     currentQuestionIndex = data.currentQuestion;
                     hasAnswered = false;
+                    selectedAnswer = -1;
                     showQuestion(data.currentQuestion);
                 } else if (data.currentQuestion === -1) {
                     console.log('Waiting for first question...');
+                }
+
+                if (data.revealedAnswers && data.revealedAnswers[currentQuestionIndex] && hasAnswered && selectedAnswer !== -1) {
+                    revealResult(currentQuestionIndex);
                 }
             } else if (data.status === 'waiting') {
                 console.log('Game is waiting for teacher to start...');
@@ -601,6 +622,8 @@
         function showQuestion(qIndex) {
             showScreen('questionScreen');
             document.getElementById('resultOverlay').classList.remove('active');
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('waitingHint').style.display = 'none';
 
             const q = questions[qIndex];
             document.getElementById('questionNum').textContent = qIndex + 1;
@@ -633,19 +656,37 @@
             }, 1000);
         }
 
-        async function selectAnswer(answer) {
+        let selectedAnswer = -1;
+
+        function selectAnswer(answer) {
             if (hasAnswered) return;
+
+            const options = document.querySelectorAll('.option-btn');
+            options.forEach(opt => {
+                opt.classList.remove('selected');
+                opt.classList.remove('disabled');
+            });
+            options[answer].classList.add('selected');
+            selectedAnswer = answer;
+
+            document.getElementById('submitBtn').style.display = 'block';
+        }
+
+        async function submitAnswer() {
+            if (selectedAnswer === -1 || hasAnswered) return;
             hasAnswered = true;
 
             if (timerInterval) clearInterval(timerInterval);
 
             const options = document.querySelectorAll('.option-btn');
             options.forEach(opt => opt.classList.add('disabled'));
-            options[answer].classList.add('selected');
+
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('waitingHint').style.display = 'block';
 
             const qIndex = currentQuestionIndex;
             const q = questions[qIndex];
-            const isCorrect = answer === q.correct;
+            const isCorrect = selectedAnswer === q.correct;
             const pointsEarned = isCorrect ? 100 : 0;
 
             if (isCorrect) {
@@ -654,19 +695,33 @@
 
             const answerRef = db.ref('games/' + gameCode + '/answers/' + qIndex + '/' + playerId);
             await answerRef.set({
-                answer: answer,
+                answer: selectedAnswer,
                 isCorrect: isCorrect,
-                timeUsed: 15 - parseInt(document.getElementById('timer').textContent.replace('⏱ ', ''))
+                timeUsed: parseInt(document.getElementById('timer').textContent.replace('⏱ ', ''))
             });
 
             const scoreRef = db.ref('games/' + gameCode + '/scores/' + playerId);
             await scoreRef.set(currentScore);
+        }
+
+        function revealResult(qIndex) {
+            if (!hasAnswered || selectedAnswer === -1) return;
+
+            const q = questions[qIndex];
+            const isCorrect = selectedAnswer === q.correct;
+            const pointsEarned = isCorrect ? 100 : 0;
+
+            const options = document.querySelectorAll('.option-btn');
 
             if (!isCorrect) {
-                options[answer].classList.remove('selected');
-                options[answer].classList.add('wrong');
+                options[selectedAnswer].classList.remove('selected');
+                options[selectedAnswer].classList.add('wrong');
                 options[q.correct].classList.add('correct');
+            } else {
+                options[selectedAnswer].classList.add('correct');
             }
+
+            document.getElementById('waitingHint').style.display = 'none';
 
             showResultOverlay({
                 isCorrect: isCorrect,
