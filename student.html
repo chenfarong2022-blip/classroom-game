@@ -233,6 +233,121 @@
         }
         .option-btn.selected .option-letter { background: rgba(255,255,255,0.3); }
 
+        /* TF Question Styles */
+        .tf-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+        }
+        .tf-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            background: white;
+            border: 3px solid #E5E7EB;
+            border-radius: 15px;
+            transition: all 0.2s;
+        }
+        .tf-item:hover:not(.disabled) {
+            border-color: var(--primary);
+        }
+        .tf-statement {
+            font-size: 16px;
+            font-weight: 500;
+            flex: 1;
+        }
+        .tf-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .tf-btn {
+            padding: 10px 25px;
+            border: 3px solid #E5E7EB;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            background: white;
+            transition: all 0.2s;
+        }
+        .tf-btn.true:hover:not(.disabled) { border-color: #10B981; background: #D1FAE5; }
+        .tf-btn.false:hover:not(.disabled) { border-color: #EF4444; background: #FEE2E2; }
+        .tf-btn.selected-true { border-color: #10B981; background: #D1FAE5; color: #065F46; }
+        .tf-btn.selected-false { border-color: #EF4444; background: #FEE2E2; color: #991B1B; }
+        .tf-btn.correct { border-color: #10B981; background: #D1FAE5; color: #065F46; }
+        .tf-btn.incorrect { border-color: #EF4444; background: #FEE2E2; color: #991B1B; }
+        .tf-item.disabled { opacity: 0.6; }
+
+        /* Match Question Styles */
+        .match-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 30px;
+            width: 100%;
+            padding: 20px;
+        }
+        .match-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .match-label {
+            font-size: 14px;
+            font-weight: bold;
+            color: #6B7280;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+        .match-item {
+            padding: 15px 20px;
+            background: white;
+            border: 3px solid #E5E7EB;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .match-item:hover:not(.disabled):not(.selected) {
+            border-color: var(--primary);
+            background: #FFF5F5;
+        }
+        .match-item.selected-left {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, #FF6B6B 0%, #FFE66D 100%);
+            color: white;
+        }
+        .match-item.selected-right {
+            border-color: var(--secondary);
+            background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%);
+            color: white;
+        }
+        .match-item.correct {
+            border-color: #10B981;
+            background: #D1FAE5;
+            color: #065F46;
+        }
+        .match-item.wrong {
+            border-color: #EF4444;
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+        .match-item.disabled { opacity: 0.6; cursor: not-allowed; }
+        .match-item.matched {
+            border-color: #10B981;
+            background: #D1FAE5;
+        }
+        .match-hint {
+            text-align: center;
+            color: #6B7280;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
         .result-overlay {
             display: none;
             position: fixed;
@@ -449,33 +564,45 @@
         const db = firebase.database();
 
         const questions = [
-            { text: "谁喜欢流行歌曲？", options: ["我们不喜欢，老师喜欢", "我们喜欢，老师不喜欢", "我们和老师都喜欢", "我们和老师都不喜欢"], correct: 2 },
-            { text: "关于第二课和第一课的课文，下面哪句话是对的？", options: ["生词都很多", "生词都很少", "课文都很长", "课文都很短"], correct: 3 },
-            { text: "谁觉得很寂寞？", options: ["麦克和玛丽", "麦克", "玛丽", "没有人觉得寂寞"], correct: 2 },
-            { text: "这句话是什么意思？", options: ["中国人的汉字比麦克写的好", "麦克的汉字比中国人写的好", "麦克的汉字写得很好", "麦克的汉字写得不太好"], correct: 2 },
-            { text: "这个饭店的菜怎么样？", options: ["好吃，但是比较贵", "好吃，而且比较便宜", "不好吃，但是比较便宜", "不好吃，而且比较贵"], correct: 1 },
-            { text: "玛丽怎么样？", options: ["兴趣跟麦克一样", "对历史、文化感兴趣", "对汉语不感兴趣", "对汉语感兴趣"], correct: 3 },
-            { text: "这两件衣服怎么样？", options: ["大小、颜色一样，肥瘦、价钱不一样", "肥瘦、大小一样，价钱、颜色不一样", "大小、价钱一样，肥瘦、颜色不一样", "价钱、颜色一样，大小、肥瘦不一样"], correct: 1 },
-            { text: "下面哪个选项对？", options: ["新车比以前那辆贵一万多块钱", "新车一万多块钱", "以前那辆车一万多块钱", "以前那辆车不是白色的"], correct: 0 },
-            { text: "下面哪个选项对？", options: ["他们的城市以前很漂亮", "他们城市的人穿得漂亮了", "他们的城市以前人很多", "他们的城市现在没有以前漂亮"], correct: 1 },
-            { text: "关于那个城市，下面哪个选项对？", options: ["北京比它早一个小时", "气候比北京干燥", "有四个季节", "季节跟北京不一样"], correct: 2 },
-            { text: "他们明天几点开始考试？", options: ["比每天上课的时间早一点儿", "比每天上课的时间晚一点儿", "跟每天上课的时间一样", "跟每天上课的时间不一样"], correct: 2 },
-            { text: "他们说去上海以前要做什么事儿？", options: ["买好回来的飞机票", "买好回来的火车票", "买去上海的飞机票", "买去上海的火车票"], correct: 2 },
-            { text: "下面哪个选项对？", options: ["老师的孩子跟小芳在一个班学习", "小芳的哥哥、姐姐也在北京", "小芳在北京生活不太好", "小芳的老师、同学对她很好"], correct: 3 },
-            { text: "下面哪个选项不对？", options: ["今天的气温没有明天高", "明天的气温跟今天一样", "今天有风", "明天有风"], correct: 1 },
-            { text: "下面哪个选项对？", options: ["小王昨天看电视剧了", "昨天的足球比赛北京队赢了", "小王昨天没看足球比赛", "小王的姐姐看足球比赛了"], correct: 2 },
-            { text: "麦克是什么意思？", options: ["这两个\"打\"的意思不一样", "这两个\"打\"的意思一样", "他不知道", "他不知道说得对不对"], correct: 0 },
-            { text: "下面哪个选项对？", options: ["玛丽的眼睛是黑色的", "玛丽的头发是黄色的", "玛丽的头发是黑色的", "玛丽妈妈的眼睛是蓝色的"], correct: 2 },
-            { text: "下面哪个选项不对？", options: ["女的想请假去邮局", "女的不能下班以后去", "他们的工作时间跟邮局的一样", "周末邮局不上班"], correct: 3 },
-            { text: "女的是什么意思？", options: ["日本同学写汉字不容易错", "日本同学写汉字有时也会写错", "中文里的汉字和日语里的汉字都不一样", "日语里汉字的意思跟中文里的一样"], correct: 1 },
-            { text: "他为什么想换宿舍？", options: ["他和同屋的生活习惯不一样", "他的同屋学习不太好", "他的同屋每天起得太早", "他不喜欢他的同屋"], correct: 0 },
-            { text: "张明和小刘的年龄分别是多大？", options: ["张明29岁，小刘31岁", "张明29岁，小刘27岁", "小刘29岁，张明31岁", "小刘29岁，张明27岁"], correct: 1 },
-            { text: "小刘在上海生活了多少年？", options: ["三十多年", "二十多年", "十多年", "几年"], correct: 2 },
-            { text: "张明和小刘分别有多高？", options: ["张明一米八，小刘一米五", "张明一米八，小刘一米六", "张明一米六，小刘一米八", "张明一米六，小刘一米五"], correct: 1 },
-            { text: "他们觉得张明和小刘哪方面比较合适？", options: ["生活习惯", "身高", "爱好", "年龄"], correct: 3 },
-            { text: "匹配练习：春天对太短了，夏天对白天很长晚上很短，秋天对常常刮风空气很干燥，冬天对白天很短晚上很长", options: ["匹配正确", "匹配错误"], correct: 0 },
-            { text: "判断题1-4：现在不是冬天(错)，七点多还能打球(对)，七点天就亮了(对)，春天不冷不热但太短(对)", options: ["判断正确", "判断错误"], correct: 0 },
-            { text: "判断题1-6：他们在商量介绍女朋友(对)，男的长得更像爸爸(错-原文没说)，父母觉得合适(错-没提)，张明觉得年龄合适(对)，小刘觉得身高合适(错-原文没说)，小刘认为爱好更重要(错-原文没说)", options: ["判断正确", "判断错误"], correct: 0 }
+            { type: "choice", text: "谁喜欢流行歌曲？", options: ["我们不喜欢，老师喜欢", "我们喜欢，老师不喜欢", "我们和老师都喜欢", "我们和老师都不喜欢"], correct: 2 },
+            { type: "choice", text: "关于第二课和第一课的课文，下面哪句话是对的？", options: ["生词都很多", "生词都很少", "课文都很长", "课文都很短"], correct: 3 },
+            { type: "choice", text: "谁觉得很寂寞？", options: ["麦克和玛丽", "麦克", "玛丽", "没有人觉得寂寞"], correct: 2 },
+            { type: "choice", text: "这句话是什么意思？", options: ["中国人的汉字比麦克写的好", "麦克的汉字比中国人写的好", "麦克的汉字写得很好", "麦克的汉字写得不太好"], correct: 2 },
+            { type: "choice", text: "这个饭店的菜怎么样？", options: ["好吃，但是比较贵", "好吃，而且比较便宜", "不好吃，但是比较便宜", "不好吃，而且比较贵"], correct: 1 },
+            { type: "choice", text: "玛丽怎么样？", options: ["兴趣跟麦克一样", "对历史、文化感兴趣", "对汉语不感兴趣", "对汉语感兴趣"], correct: 3 },
+            { type: "choice", text: "这两件衣服怎么样？", options: ["大小、颜色一样，肥瘦、价钱不一样", "肥瘦、大小一样，价钱、颜色不一样", "大小、价钱一样，肥瘦、颜色不一样", "价钱、颜色一样，大小、肥瘦不一样"], correct: 1 },
+            { type: "choice", text: "下面哪个选项对？", options: ["新车比以前那辆贵一万多块钱", "新车一万多块钱", "以前那辆车一万多块钱", "以前那辆车不是白色的"], correct: 0 },
+            { type: "choice", text: "下面哪个选项对？", options: ["他们的城市以前很漂亮", "他们城市的人穿得漂亮了", "他们的城市以前人很多", "他们的城市现在没有以前漂亮"], correct: 1 },
+            { type: "choice", text: "关于那个城市，下面哪个选项对？", options: ["北京比它早一个小时", "气候比北京干燥", "有四个季节", "季节跟北京不一样"], correct: 2 },
+            { type: "choice", text: "他们明天几点开始考试？", options: ["比每天上课的时间早一点儿", "比每天上课的时间晚一点儿", "跟每天上课的时间一样", "跟每天上课的时间不一样"], correct: 2 },
+            { type: "choice", text: "他们说去上海以前要做什么事儿？", options: ["买好回来的飞机票", "买好回来的火车票", "买去上海的飞机票", "买去上海的火车票"], correct: 2 },
+            { type: "choice", text: "下面哪个选项对？", options: ["老师的孩子跟小芳在一个班学习", "小芳的哥哥、姐姐也在北京", "小芳在北京生活不太好", "小芳的老师、同学对她很好"], correct: 3 },
+            { type: "choice", text: "下面哪个选项不对？", options: ["今天的气温没有明天高", "明天的气温跟今天一样", "今天有风", "明天有风"], correct: 1 },
+            { type: "choice", text: "下面哪个选项对？", options: ["小王昨天看电视剧了", "昨天的足球比赛北京队赢了", "小王昨天没看足球比赛", "小王的姐姐看足球比赛了"], correct: 2 },
+            { type: "choice", text: "麦克是什么意思？", options: ["这两个\"打\"的意思不一样", "这两个\"打\"的意思一样", "他不知道", "他不知道说得对不对"], correct: 0 },
+            { type: "choice", text: "下面哪个选项对？", options: ["玛丽的眼睛是黑色的", "玛丽的头发是黄色的", "玛丽的头发是黑色的", "玛丽妈妈的眼睛是蓝色的"], correct: 2 },
+            { type: "choice", text: "下面哪个选项不对？", options: ["女的想请假去邮局", "女的不能下班以后去", "他们的工作时间跟邮局的一样", "周末邮局不上班"], correct: 3 },
+            { type: "choice", text: "女的是什么意思？", options: ["日本同学写汉字不容易错", "日本同学写汉字有时也会写错", "中文里的汉字和日语里的汉字都不一样", "日语里汉字的意思跟中文里的一样"], correct: 1 },
+            { type: "choice", text: "他为什么想换宿舍？", options: ["他和同屋的生活习惯不一样", "他的同屋学习不太好", "他的同屋每天起得太早", "他不喜欢他的同屋"], correct: 0 },
+            { type: "choice", text: "张明和小刘的年龄分别是多大？", options: ["张明29岁，小刘31岁", "张明29岁，小刘27岁", "小刘29岁，张明31岁", "小刘29岁，张明27岁"], correct: 1 },
+            { type: "choice", text: "小刘在上海生活了多少年？", options: ["三十多年", "二十多年", "十多年", "几年"], correct: 2 },
+            { type: "choice", text: "张明和小刘分别有多高？", options: ["张明一米八，小刘一米五", "张明一米八，小刘一米六", "张明一米六，小刘一米八", "张明一米六，小刘一米五"], correct: 1 },
+            { type: "choice", text: "他们觉得张明和小刘哪方面比较合适？", options: ["生活习惯", "身高", "爱好", "年龄"], correct: 3 },
+            { type: "match", left: ["春天", "夏天", "秋天", "冬天"], right: ["太短了", "白天很长，晚上很短", "常常刮风，空气很干燥", "白天很短，晚上很长"], correct: [0, 1, 2, 3] },
+            { type: "tf", items: [
+                { statement: "(1) 现在是冬天。", correct: false },
+                { statement: "(2) 现在七点多还可以在外面打球。", correct: true },
+                { statement: "(3) 现在早上七点天就亮了。", correct: true },
+                { statement: "(4) 男的觉得春天比较舒服，气温很合适。", correct: false }
+            ]},
+            { type: "tf", items: [
+                { statement: "(1) 他们俩在商量给张明介绍女朋友的事。", correct: true },
+                { statement: "(2) 男的觉得张明长得更像妈妈。", correct: false },
+                { statement: "(3) 张明的爸爸和妈妈都觉得张明和小刘不合适。", correct: false },
+                { statement: "(4) 张明觉得年龄合适。", correct: true },
+                { statement: "(5) 小刘觉得身高合适。", correct: false },
+                { statement: "(6) 小刘认为爱好更重要。", correct: false }
+            ]}
         ];
 
         let gameCode = '';
@@ -609,13 +736,24 @@
                     currentQuestionIndex = data.currentQuestion;
                     hasAnswered = false;
                     selectedAnswer = -1;
+                    tfAnswers = {};
+                    matchPairs = {};
+                    matchSelections = { left: -1, right: -1 };
                     showQuestion(data.currentQuestion);
                 } else if (data.currentQuestion === -1) {
                     console.log('Waiting for first question...');
                 }
 
-                if (data.revealedAnswers && data.revealedAnswers[currentQuestionIndex] && hasAnswered && selectedAnswer !== -1) {
-                    revealResult(currentQuestionIndex);
+                if (data.revealedAnswers && data.revealedAnswers[currentQuestionIndex]) {
+                    const q = questions[currentQuestionIndex];
+                    let canReveal = false;
+                    if (q.type === 'choice' && hasAnswered && selectedAnswer !== -1) canReveal = true;
+                    if (q.type === 'tf' && hasAnswered && Object.keys(tfAnswers).length === q.items.length) canReveal = true;
+                    if (q.type === 'match' && hasAnswered && Object.keys(matchPairs).length === q.left.length) canReveal = true;
+                    
+                    if (canReveal) {
+                        revealResult(currentQuestionIndex);
+                    }
                 }
             } else if (data.status === 'waiting') {
                 console.log('Game is waiting for teacher to start...');
@@ -633,14 +771,148 @@
             document.getElementById('currentScore').textContent = currentScore;
 
             const optionsGrid = document.getElementById('optionsGrid');
-            optionsGrid.innerHTML = q.options.map((opt, idx) => `
-                <button class="option-btn" onclick="selectAnswer(${idx})">
-                    <span class="option-letter">${String.fromCharCode(65 + idx)}</span>
-                    ${opt}
-                </button>
-            `).join('');
+            
+            if (q.type === 'choice') {
+                optionsGrid.innerHTML = q.options.map((opt, idx) => `
+                    <button class="option-btn" onclick="selectChoice(${idx})">
+                        <span class="option-letter">${String.fromCharCode(65 + idx)}</span>
+                        ${opt}
+                    </button>
+                `).join('');
+            } else if (q.type === 'tf') {
+                optionsGrid.innerHTML = `
+                    <div class="tf-container">
+                        ${q.items.map((item, idx) => `
+                            <div class="tf-item" data-tf-idx="${idx}">
+                                <span class="tf-statement">${item.statement}</span>
+                                <div class="tf-buttons">
+                                    <button class="tf-btn true" onclick="selectTF(${idx}, true)">True</button>
+                                    <button class="tf-btn false" onclick="selectTF(${idx}, false)">False</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } else if (q.type === 'match') {
+                optionsGrid.innerHTML = `
+                    <div class="match-container">
+                        <div class="match-column">
+                            <div class="match-label">左边的词</div>
+                            ${q.left.map((item, idx) => `
+                                <div class="match-item" data-match-left="${idx}" onclick="selectMatchLeft(${idx})">${item}</div>
+                            `).join('')}
+                        </div>
+                        <div class="match-column">
+                            <div class="match-label">右边的解释</div>
+                            ${q.right.map((item, idx) => `
+                                <div class="match-item" data-match-right="${idx}" onclick="selectMatchRight(${idx})">${item}</div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="match-hint">请先点击左边的词，再点击右边对应的解释</div>
+                `;
+            }
 
             startTimer();
+        }
+
+        // For TF and Match, we need to track multiple answers
+        let tfAnswers = {};
+        let matchSelections = { left: -1, right: -1 };
+        let matchPairs = {};
+
+        function selectChoice(answer) {
+            if (hasAnswered) return;
+
+            const options = document.querySelectorAll('.option-btn');
+            options.forEach(opt => {
+                opt.classList.remove('selected');
+                opt.classList.remove('disabled');
+            });
+            options[answer].classList.add('selected');
+            selectedAnswer = answer;
+
+            document.getElementById('submitBtn').style.display = 'block';
+        }
+
+        function selectTF(idx, value) {
+            if (hasAnswered) return;
+            if (tfAnswers[idx] !== undefined) return;
+
+            tfAnswers[idx] = value;
+            const tfItem = document.querySelector(`.tf-item[data-tf-idx="${idx}"]`);
+            const trueBtn = tfItem.querySelector('.tf-btn.true');
+            const falseBtn = tfItem.querySelector('.tf-btn.false');
+
+            if (value === true) {
+                trueBtn.classList.add('selected-true');
+                falseBtn.classList.remove('selected-false');
+            } else {
+                falseBtn.classList.add('selected-false');
+                trueBtn.classList.remove('selected-true');
+            }
+
+            checkAllTFAnswered();
+        }
+
+        function checkAllTFAnswered() {
+            const q = questions[currentQuestionIndex];
+            if (q.type !== 'tf') return;
+
+            const allAnswered = q.items.every((item, idx) => tfAnswers[idx] !== undefined);
+            if (allAnswered) {
+                document.getElementById('submitBtn').style.display = 'block';
+            }
+        }
+
+        function selectMatchLeft(idx) {
+            if (hasAnswered) return;
+            if (matchPairs[idx] !== undefined) return;
+
+            document.querySelectorAll('.match-item[data-match-left]').forEach(item => {
+                item.classList.remove('selected-left');
+            });
+            const item = document.querySelector(`.match-item[data-match-left="${idx}"]`);
+            item.classList.add('selected-left');
+            matchSelections.left = idx;
+
+            tryMatch();
+        }
+
+        function selectMatchRight(idx) {
+            if (hasAnswered) return;
+
+            document.querySelectorAll('.match-item[data-match-right]').forEach(item => {
+                item.classList.remove('selected-right');
+            });
+            const item = document.querySelector(`.match-item[data-match-right="${idx}"]`);
+            item.classList.add('selected-right');
+            matchSelections.right = idx;
+
+            tryMatch();
+        }
+
+        function tryMatch() {
+            if (matchSelections.left !== -1 && matchSelections.right !== -1) {
+                matchPairs[matchSelections.left] = matchSelections.right;
+
+                const leftItem = document.querySelector(`.match-item[data-match-left="${matchSelections.left}"]`);
+                const rightItem = document.querySelector(`.match-item[data-match-right="${matchSelections.right}"]`);
+
+                leftItem.classList.remove('selected-left');
+                rightItem.classList.remove('selected-right');
+                leftItem.classList.add('disabled');
+                rightItem.classList.add('disabled');
+                leftItem.classList.add('matched');
+                rightItem.classList.add('matched');
+
+                matchSelections = { left: -1, right: -1 };
+
+                const q = questions[currentQuestionIndex];
+                if (Object.keys(matchPairs).length === q.left.length) {
+                    document.getElementById('submitBtn').style.display = 'block';
+                }
+            }
         }
 
         function startTimer() {
@@ -676,30 +948,56 @@
         }
 
         async function submitAnswer() {
-            if (selectedAnswer === -1 || hasAnswered) return;
+            if (hasAnswered) return;
             hasAnswered = true;
 
             if (timerInterval) clearInterval(timerInterval);
 
-            const options = document.querySelectorAll('.option-btn');
-            options.forEach(opt => opt.classList.add('disabled'));
-
-            document.getElementById('submitBtn').style.display = 'none';
-            document.getElementById('waitingHint').style.display = 'block';
-
             const qIndex = currentQuestionIndex;
             const q = questions[qIndex];
-            const isCorrect = selectedAnswer === q.correct;
-            const pointsEarned = isCorrect ? 100 : 0;
+            let isCorrect = false;
+            let answerData = {};
 
+            if (q.type === 'choice') {
+                if (selectedAnswer === -1) return;
+                document.querySelectorAll('.option-btn').forEach(opt => opt.classList.add('disabled'));
+                isCorrect = selectedAnswer === q.correct;
+                answerData = { type: 'choice', answer: selectedAnswer, isCorrect };
+            } else if (q.type === 'tf') {
+                const tfKeys = Object.keys(tfAnswers);
+                if (tfKeys.length !== q.items.length) return;
+                document.querySelectorAll('.tf-item').forEach(item => item.classList.add('disabled'));
+                
+                let correctCount = 0;
+                q.items.forEach((item, idx) => {
+                    if (tfAnswers[idx] === item.correct) correctCount++;
+                });
+                isCorrect = correctCount === q.items.length;
+                answerData = { type: 'tf', answers: tfAnswers, isCorrect };
+            } else if (q.type === 'match') {
+                const matchKeys = Object.keys(matchPairs);
+                if (matchKeys.length !== q.left.length) return;
+                document.querySelectorAll('.match-item').forEach(item => item.classList.add('disabled'));
+                
+                let correctCount = 0;
+                q.left.forEach((item, idx) => {
+                    if (matchPairs[idx] === q.correct[idx]) correctCount++;
+                });
+                isCorrect = correctCount === q.left.length;
+                answerData = { type: 'match', pairs: matchPairs, isCorrect };
+            }
+
+            const pointsEarned = isCorrect ? 100 : 0;
             if (isCorrect) {
                 currentScore += pointsEarned;
             }
 
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('waitingHint').style.display = 'block';
+
             const answerRef = db.ref('games/' + gameCode + '/answers/' + qIndex + '/' + playerId);
             await answerRef.set({
-                answer: selectedAnswer,
-                isCorrect: isCorrect,
+                ...answerData,
                 timeUsed: parseInt(document.getElementById('timer').textContent.replace('⏱ ', ''))
             });
 
@@ -708,22 +1006,56 @@
         }
 
         function revealResult(qIndex) {
-            if (!hasAnswered || selectedAnswer === -1) return;
+            if (!hasAnswered) return;
 
             const q = questions[qIndex];
-            const isCorrect = selectedAnswer === q.correct;
-            const pointsEarned = isCorrect ? 100 : 0;
+            let isCorrect = false;
 
-            const options = document.querySelectorAll('.option-btn');
-
-            if (!isCorrect) {
-                options[selectedAnswer].classList.remove('selected');
-                options[selectedAnswer].classList.add('wrong');
-                options[q.correct].classList.add('correct');
-            } else {
-                options[selectedAnswer].classList.add('correct');
+            if (q.type === 'choice') {
+                if (selectedAnswer === -1) return;
+                isCorrect = selectedAnswer === q.correct;
+                const options = document.querySelectorAll('.option-btn');
+                if (!isCorrect) {
+                    options[selectedAnswer].classList.remove('selected');
+                    options[selectedAnswer].classList.add('wrong');
+                    options[q.correct].classList.add('correct');
+                } else {
+                    options[selectedAnswer].classList.add('correct');
+                }
+            } else if (q.type === 'tf') {
+                isCorrect = true;
+                q.items.forEach((item, idx) => {
+                    const tfItem = document.querySelector(`.tf-item[data-tf-idx="${idx}"]`);
+                    const userAnswer = tfAnswers[idx];
+                    const trueBtn = tfItem.querySelector('.tf-btn.true');
+                    const falseBtn = tfItem.querySelector('.tf-btn.false');
+                    
+                    if (userAnswer === item.correct) {
+                        (userAnswer ? trueBtn : falseBtn).classList.add('correct');
+                    } else {
+                        (userAnswer ? trueBtn : falseBtn).classList.add('incorrect');
+                        (item.correct ? trueBtn : falseBtn).classList.add('correct');
+                        isCorrect = false;
+                    }
+                });
+            } else if (q.type === 'match') {
+                isCorrect = true;
+                q.left.forEach((item, idx) => {
+                    const leftItem = document.querySelector(`.match-item[data-match-left="${idx}"]`);
+                    const rightItem = document.querySelector(`.match-item[data-match-right="${matchPairs[idx]}"]`);
+                    
+                    if (matchPairs[idx] === q.correct[idx]) {
+                        leftItem.classList.add('correct');
+                        rightItem.classList.add('correct');
+                    } else {
+                        leftItem.classList.add('wrong');
+                        rightItem.classList.add('wrong');
+                        isCorrect = false;
+                    }
+                });
             }
 
+            const pointsEarned = isCorrect ? 100 : 0;
             document.getElementById('waitingHint').style.display = 'none';
 
             showResultOverlay({
