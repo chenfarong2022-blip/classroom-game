@@ -719,9 +719,14 @@
             startTimer();
 
             if (gameRef) {
+                console.log('Updating Firebase: status=playing, currentQuestion=' + currentQuestion);
                 gameRef.update({
                     status: 'playing',
                     currentQuestion: currentQuestion
+                }).then(() => {
+                    console.log('Firebase update successful');
+                }).catch((err) => {
+                    console.error('Firebase update failed:', err);
                 });
             }
 
