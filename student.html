@@ -570,15 +570,17 @@
                 return;
             }
 
-            if (data.status === 'playing' && data.currentQuestion >= 0) {
-                if (data.currentQuestion !== currentQuestionIndex) {
+            if (data.status === 'playing') {
+                if (data.currentQuestion >= 0 && data.currentQuestion !== currentQuestionIndex) {
                     console.log('Student updating to question:', data.currentQuestion);
                     currentQuestionIndex = data.currentQuestion;
                     hasAnswered = false;
                     showQuestion(data.currentQuestion);
+                } else if (data.currentQuestion === -1) {
+                    console.log('Waiting for first question...');
                 }
             } else if (data.status === 'waiting') {
-                console.log('Game is waiting...');
+                console.log('Game is waiting for teacher to start...');
             }
         }
 
