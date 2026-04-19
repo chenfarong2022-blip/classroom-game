@@ -1532,6 +1532,7 @@
                 <p style="color: #9CA3AF; text-align: center; font-size: 14px;">等待学生加入...</p>
             </div>
             <button class="game-btn primary" id="startGameBtn" onclick="startGame()" disabled>开始游戏 (等待学生...)</button>
+            <button class="game-btn secondary" id="revealAnswerBtn" onclick="revealAnswer()" style="display:none; background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: white;">公布答案</button>
             <button class="game-btn secondary" onclick="resetGame()">重新开始</button>
         </div>
     </div>
@@ -3697,10 +3698,13 @@
                 currentSlide = newSlide;
                 updateSlide();
 
-                // Update Firebase when moving to question slides (3-12, 26-27, 29-33, 44-45)
+                const questionMap = {3:0, 4:1, 5:2, 6:3, 7:4, 8:5, 9:6, 10:7, 11:8, 12:9, 26:10, 27:11, 29:12, 30:13, 31:14, 32:15, 33:16, 44:17, 45:18};
+                const isQuestionSlide = questionMap[newSlide] !== undefined;
+
+                document.getElementById('revealAnswerBtn').style.display = isQuestionSlide ? 'block' : 'none';
+
                 if (gameRef && newSlide >= 3) {
-                    const questionMap = {3:0, 4:1, 5:2, 6:3, 7:4, 8:5, 9:6, 10:7, 11:8, 12:9, 26:10, 27:11, 29:12, 30:13, 31:14, 32:15, 33:16, 44:17, 45:18};
-                    if (questionMap[newSlide] !== undefined) {
+                    if (isQuestionSlide) {
                         gameRef.update({
                             status: 'playing',
                             currentQuestion: questionMap[newSlide]
@@ -3882,6 +3886,41 @@
             if (confirm('确定要重新开始吗？')) {
                 window.location.reload();
             }
+        }
+
+        function revealAnswer() {
+            const questionMap = {3:0, 4:1, 5:2, 6:3, 7:4, 8:5, 9:6, 10:7, 11:8, 12:9, 26:10, 27:11, 29:12, 30:13, 31:14, 32:15, 33:16, 44:17, 45:18};
+            const slideEl = document.querySelector('.slide.active');
+            const slideNum = slideEl ? parseInt(slideEl.dataset.slide) : 0;
+            const qIndex = questionMap[slideNum];
+
+            if (qIndex === undefined || !gameRef) return;
+
+            const q = questions[qIndex];
+            const currentOptionsGrid = slideEl.querySelector('.options-grid');
+            if (!currentOptionsGrid) return;
+
+            const options = currentOptionsGrid.querySelectorAll('.option');
+            options.forEach(opt => {
+                opt.classList.add('disabled');
+                opt.style.cursor = 'default';
+            });
+
+            const correctOption = Array.from(options).find(opt => opt.dataset.correct === 'true');
+            if (correctOption) {
+                correctOption.classList.add('correct');
+            }
+
+            let feedback = currentOptionsGrid.nextElementSibling;
+            if (feedback && feedback.classList.contains('feedback-message')) {
+                feedback.classList.add('correct');
+                feedback.classList.remove('incorrect');
+                feedback.innerHTML = '🎉 答案已公布！<br><button class="reset-btn" onclick="resetOptions(this)">重新选择</button>';
+            }
+
+            gameRef.child('revealedAnswers').child(qIndex).set(true);
+
+            document.getElementById('revealAnswerBtn').style.display = 'none';
         }
 
         function showTimer(seconds) {
