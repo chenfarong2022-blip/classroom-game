@@ -3745,7 +3745,7 @@
                 currentSlide = newSlide;
                 updateSlide();
 
-                const questionMap = {3:0, 4:1, 5:2, 6:3, 7:4, 8:5, 9:6, 10:7, 11:8, 12:9, 14:10, 15:11, 16:12, 17:13, 18:14, 19:15, 20:16, 21:17, 22:18, 23:19, 26:24, 27:25, 29:26, 30:20, 31:21, 32:22, 33:23};
+                const questionMap = {3:0, 4:1, 5:2, 6:3, 7:4, 8:5, 9:6, 10:7, 11:8, 12:9, 14:10, 15:11, 16:12, 17:13, 18:14, 19:15, 20:16, 21:17, 22:18, 23:19, 26:20, 27:21, 29:22, 30:23, 31:24, 32:25, 33:26};
 
                 if (gameRef && newSlide >= 3) {
                     const qIndex = questionMap[newSlide];
@@ -3810,10 +3810,6 @@
             { type: "choice", text: "下面哪个选项不对？", options: ["女的想请假去邮局", "女的不能下班以后去", "他们的工作时间跟邮局的一样", "周末邮局不上班"], correct: 3 },
             { type: "choice", text: "女的是什么意思？", options: ["日本同学写汉字不容易错", "日本同学写汉字有时也会写错", "中文里的汉字和日语里的汉字都不一样", "日语里汉字的意思跟中文里的一样"], correct: 1 },
             { type: "choice", text: "他为什么想换宿舍？", options: ["他和同屋的生活习惯不一样", "他的同屋学习不太好", "他的同屋每天起得太早", "他不喜欢他的同屋"], correct: 0 },
-            { type: "choice", text: "张明和小刘的年龄分别是多大？", options: ["张明29岁，小刘31岁", "张明29岁，小刘27岁", "小刘29岁，张明31岁", "小刘29岁，张明27岁"], correct: 1 },
-            { type: "choice", text: "小刘在上海生活了多少年？", options: ["三十多年", "二十多年", "十多年", "几年"], correct: 2 },
-            { type: "choice", text: "张明和小刘分别有多高？", options: ["张明一米八，小刘一米五", "张明一米八，小刘一米六", "张明一米六，小刘一米八", "张明一米六，小刘一米五"], correct: 1 },
-            { type: "choice", text: "他们觉得张明和小刘哪方面比较合适？", options: ["生活习惯", "身高", "爱好", "年龄"], correct: 3 },
             { type: "match", left: ["春天", "夏天", "秋天", "冬天"], right: ["太短了", "白天很长，晚上很短", "常常刮风，空气很干燥", "白天很短，晚上很长"], correct: [0, 1, 2, 3] },
             { type: "tf", items: [
                 { statement: "(1) 现在是冬天。", correct: false },
@@ -3828,7 +3824,12 @@
                 { statement: "(4) 张明觉得年龄合适。", correct: true },
                 { statement: "(5) 小刘觉得身高合适。", correct: false },
                 { statement: "(6) 小刘认为爱好更重要。", correct: false }
-            ]}
+            ]},
+            { type: "choice", text: "张明和小刘的年龄分别是多大？", options: ["张明29岁，小刘31岁", "张明29岁，小刘27岁", "小刘29岁，张明31岁", "小刘29岁，张明27岁"], correct: 1 },
+            { type: "choice", text: "小刘在上海生活了多少年？", options: ["三十多年", "二十多年", "十多年", "几年"], correct: 2 },
+            { type: "choice", text: "张明和小刘分别有多高？", options: ["张明一米八，小刘一米五", "张明一米八，小刘一米六", "张明一米六，小刘一米八", "张明一米六，小刘一米五"], correct: 1 },
+            { type: "choice", text: "他们觉得张明和小刘哪方面比较合适？", options: ["生活习惯", "身高", "爱好", "年龄"], correct: 3 }
+        ];
         ];
 
         function generateGameCode() {
@@ -3952,7 +3953,7 @@
         }
 
         function revealAnswer() {
-            const questionMap = {3:0, 4:1, 5:2, 6:3, 7:4, 8:5, 9:6, 10:7, 11:8, 12:9, 14:10, 15:11, 16:12, 17:13, 18:14, 19:15, 20:16, 21:17, 22:18, 23:19, 26:24, 27:25, 29:26, 30:20, 31:21, 32:22, 33:23};
+            const questionMap = {3:0, 4:1, 5:2, 6:3, 7:4, 8:5, 9:6, 10:7, 11:8, 12:9, 14:10, 15:11, 16:12, 17:13, 18:14, 19:15, 20:16, 21:17, 22:18, 23:19, 26:20, 27:21, 29:22, 30:23, 31:24, 32:25, 33:26};
             const slideEl = document.querySelector('.slide.active');
             const slideNum = slideEl ? parseInt(slideEl.dataset.slide) : 0;
             const qIndex = questionMap[slideNum];
