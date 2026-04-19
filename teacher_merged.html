@@ -667,6 +667,34 @@
             color: #DC2626;
         }
 
+        .slide-reveal-btn {
+            display: none;
+            width: 100%;
+            margin-top: 15px;
+            padding: 15px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .slide-reveal-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .slide-reveal-btn.shown {
+            display: block;
+        }
+
+        .slide-reveal-btn.hidden {
+            display: none;
+        }
+
         .tf-item {
             cursor: pointer;
             transition: all 0.3s ease;
@@ -1532,7 +1560,6 @@
                 <p style="color: #9CA3AF; text-align: center; font-size: 14px;">等待学生加入...</p>
             </div>
             <button class="game-btn primary" id="startGameBtn" onclick="startGame()" disabled>开始游戏 (等待学生...)</button>
-            <button class="game-btn secondary" id="revealAnswerBtn" onclick="revealAnswer()" style="display:none; background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: white;">公布答案</button>
             <button class="game-btn secondary" onclick="resetGame()">重新开始</button>
         </div>
     </div>
@@ -3688,7 +3715,26 @@
             prevBtn.classList.toggle('disabled', currentSlide === 1);
             nextBtn.classList.toggle('disabled', currentSlide === totalSlides);
 
-            // Load audio for current slide
+            const questionMap = {3:0, 4:1, 5:2, 6:3, 7:4, 8:5, 9:6, 10:7, 11:8, 12:9, 26:10, 27:11, 29:12, 30:13, 31:14, 32:15, 33:16, 44:17, 45:18};
+            const isQuestionSlide = questionMap[currentSlide] !== undefined;
+
+            const activeSlide = document.querySelector('.slide.active');
+            if (activeSlide) {
+                const existingBtn = activeSlide.querySelector('.slide-reveal-btn');
+                if (existingBtn) existingBtn.remove();
+
+                if (isQuestionSlide && gameRef) {
+                    const feedbackMsg = activeSlide.querySelector('.feedback-message');
+                    if (feedbackMsg) {
+                        const btn = document.createElement('button');
+                        btn.className = 'slide-reveal-btn';
+                        btn.textContent = '公布答案';
+                        btn.onclick = revealAnswer;
+                        feedbackMsg.parentNode.insertBefore(btn, feedbackMsg);
+                    }
+                }
+            }
+
             loadAudio(currentSlide);
         }
 
@@ -3700,8 +3746,6 @@
 
                 const questionMap = {3:0, 4:1, 5:2, 6:3, 7:4, 8:5, 9:6, 10:7, 11:8, 12:9, 26:10, 27:11, 29:12, 30:13, 31:14, 32:15, 33:16, 44:17, 45:18};
                 const isQuestionSlide = questionMap[newSlide] !== undefined;
-
-                document.getElementById('revealAnswerBtn').style.display = isQuestionSlide ? 'block' : 'none';
 
                 if (gameRef && newSlide >= 3) {
                     if (isQuestionSlide) {
@@ -3920,7 +3964,8 @@
 
             gameRef.child('revealedAnswers').child(qIndex).set(true);
 
-            document.getElementById('revealAnswerBtn').style.display = 'none';
+            const revealBtn = slideEl.querySelector('.slide-reveal-btn');
+            if (revealBtn) revealBtn.style.display = 'none';
         }
 
         function showTimer(seconds) {
