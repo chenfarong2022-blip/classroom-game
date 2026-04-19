@@ -3737,6 +3737,8 @@
             loadAudio(currentSlide);
         }
 
+        let lastQIndexSent = -1;
+
         function changeSlide(direction) {
             const newSlide = currentSlide + direction;
             if (newSlide >= 1 && newSlide <= totalSlides) {
@@ -3747,7 +3749,8 @@
 
                 if (gameRef && newSlide >= 3) {
                     const qIndex = questionMap[newSlide];
-                    if (qIndex !== undefined) {
+                    if (qIndex !== undefined && qIndex !== lastQIndexSent) {
+                        lastQIndexSent = qIndex;
                         gameRef.update({
                             status: 'playing',
                             currentQuestion: qIndex
