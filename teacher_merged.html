@@ -1453,6 +1453,29 @@
             display: block;
         }
         
+        .fullscreen-btn {
+            position: fixed;
+            top: 90px;
+            right: 20px;
+            z-index: 9999;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            background: white;
+            color: var(--dark);
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .fullscreen-btn:hover {
+            background: #F3F4F6;
+        }
+        
         .qr-small {
             background: white;
             padding: 15px;
@@ -1493,6 +1516,7 @@
 <body>
     <!-- Game Control Button -->
     <button class="toggle-game" id="toggleGameBtn" onclick="toggleGamePanel()">🎮</button>
+    <button class="fullscreen-btn" id="fullscreenBtn" onclick="toggleFullscreen()" title="全屏">⛶</button>
     
     <!-- Game Control Panel -->
     <div class="game-control" id="gameControl">
@@ -3803,6 +3827,30 @@
                 // First time opening
                 panel.classList.add('active');
                 minimizeBtn.textContent = '➖';
+            }
+        }
+        
+        function toggleFullscreen() {
+            if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
+                // Enter fullscreen
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                } else if (document.documentElement.webkitRequestFullscreen) {
+                    document.documentElement.webkitRequestFullscreen();
+                } else if (document.documentElement.msRequestFullscreen) {
+                    document.documentElement.msRequestFullscreen();
+                }
+                document.getElementById('fullscreenBtn').textContent = '✕';
+            } else {
+                // Exit fullscreen
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+                document.getElementById('fullscreenBtn').textContent = '⛶';
             }
         }
         
