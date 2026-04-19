@@ -1322,14 +1322,59 @@
             z-index: 10000;
             background: white;
             border-radius: 25px;
-            padding: 30px;
+            padding: 0;
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
             min-width: 400px;
             display: none;
+            overflow: hidden;
         }
         
         .game-control.active {
             display: block;
+        }
+        
+        .game-control.minimized {
+            min-width: auto;
+            width: auto;
+        }
+        
+        .game-control.minimized .game-control-content {
+            display: none;
+        }
+        
+        .game-control-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            border-bottom: 1px solid #E5E7EB;
+        }
+        
+        .game-control-header h3 {
+            font-size: 18px;
+            color: #6B7280;
+            margin: 0;
+        }
+        
+        .minimize-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: #F3F4F6;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .minimize-btn:hover {
+            background: #E5E7EB;
+        }
+        
+        .game-control-content {
+            padding: 25px;
         }
         
         .game-control h3 {
@@ -1451,15 +1496,20 @@
     
     <!-- Game Control Panel -->
     <div class="game-control" id="gameControl">
-        <h3>🎮 游戏控制</h3>
-        <div class="game-code-display" id="gameCodeDisplay">----</div>
-        <div class="qr-small" id="qrcode"></div>
-        <p style="font-size: 12px; color: #6B7280; margin-top: 8px; text-align: center;">学生扫码加入</p>
-        <div class="player-list" id="playerList">
-            <p style="color: #9CA3AF; text-align: center; font-size: 13px;">等待学生加入...</p>
+        <div class="game-control-header">
+            <h3>🎮 游戏控制</h3>
+            <button class="minimize-btn" id="minimizeBtn" onclick="toggleGamePanel()">➖</button>
         </div>
-        <button class="game-btn primary" id="startGameBtn" onclick="startGame()" disabled>开始游戏 (等待学生...)</button>
-        <button class="game-btn secondary" onclick="resetGame()">重新开始</button>
+        <div class="game-control-content">
+            <div class="game-code-display" id="gameCodeDisplay">----</div>
+            <div class="qr-small" id="qrcode"></div>
+            <p style="font-size: 14px; color: #6B7280; margin-top: 10px; text-align: center;">学生扫码加入</p>
+            <div class="player-list" id="playerList">
+                <p style="color: #9CA3AF; text-align: center; font-size: 14px;">等待学生加入...</p>
+            </div>
+            <button class="game-btn primary" id="startGameBtn" onclick="startGame()" disabled>开始游戏 (等待学生...)</button>
+            <button class="game-btn secondary" onclick="resetGame()">重新开始</button>
+        </div>
     </div>
     
     <!-- Timer Overlay -->
@@ -3739,9 +3789,23 @@
 
         function toggleGamePanel() {
             const panel = document.getElementById('gameControl');
-            panel.classList.toggle('active');
+            const minimizeBtn = document.getElementById('minimizeBtn');
+            
+            if (panel.classList.contains('minimized')) {
+                // Maximize
+                panel.classList.remove('minimized');
+                minimizeBtn.textContent = '➖';
+            } else if (panel.classList.contains('active')) {
+                // Minimize
+                panel.classList.add('minimized');
+                minimizeBtn.textContent = '➕';
+            } else {
+                // First time opening
+                panel.classList.add('active');
+                minimizeBtn.textContent = '➖';
+            }
         }
-
+        
         async function startGame() {
             await gameRef.update({ status: 'playing' });
             document.getElementById('gameControl').classList.remove('active');
