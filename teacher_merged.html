@@ -468,7 +468,7 @@
             margin-top: 15px;
         }
 
-        .original-text {
+        .original-text, .context-text {
             font-size: 22px;
             line-height: 1.8;
             color: var(--dark);
@@ -1605,24 +1605,20 @@
             </div>
             <div class="question-content">
                 <div class="question-section">
-                    <div class="original-toggle" onclick="toggleOriginal(this)">
-                        <span class="icon">🔊</span> 点击显示听力原文
-                    </div>
-                    <div class="original-content">
-                        <div class="original-text">不但我们喜欢流行歌曲，而且老师也喜欢。</div>
-                    </div>
+                    <div class="section-label question">听力原文</div>
+                    <div class="context-text">麦克还在睡觉。妈妈说："麦克，起床吧，差十分钟八点了。"</div>
                 </div>
                 <div class="question-section">
                     <div class="section-label question">问题</div>
-                    <div class="question-text">谁喜欢流行歌曲？</div>
+                    <div class="question-text">现在几点？</div>
                 </div>
                 <div class="question-section">
                     <div class="section-label options">请选择正确答案</div>
                     <div class="options-grid" data-question-id="1">
-                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">A</span><span class="option-text">我们不喜欢，老师喜欢</span></div>
-                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">B</span><span class="option-text">我们喜欢，老师不喜欢</span></div>
-                        <div class="option" data-correct="true" onclick="checkAnswer(this, true)"><span class="option-letter">C</span><span class="option-text">我们和老师都喜欢</span></div>
-                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">D</span><span class="option-text">我们和老师都不喜欢</span></div>
+                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">A</span><span class="option-text">八点十分</span></div>
+                        <div class="option" data-correct="true" onclick="checkAnswer(this, true)"><span class="option-letter">B</span><span class="option-text">七点五十</span></div>
+                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">C</span><span class="option-text">八点五十</span></div>
+                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">D</span><span class="option-text">七点十分</span></div>
                     </div>
                     <button class="slide-reveal-btn" onclick="revealAnswer()">公布答案</button>
                     <div class="feedback-message"></div>
@@ -1641,32 +1637,32 @@
             </div>
             <div class="question-content">
                 <div class="question-section">
-                    <div class="original-toggle" onclick="toggleOriginal(this)">
-                        <span class="icon">🔊</span> 点击显示听力原文
-                    </div>
-                    <div class="original-content">
-                        <div class="original-text">第二课的课文跟第一课不一样，虽然也很短，可是生词不少。</div>
-                    </div>
+                    <div class="section-label question">听力原文</div>
+                    <div class="context-text">麦克说："我原来想在这儿学习半年，现在觉得汉语很有意思，所以我准备再延长一年。"</div>
                 </div>
                 <div class="question-section">
                     <div class="section-label question">问题</div>
-                    <div class="question-text">关于第二课和第一课的课文，下面哪句话是对的？</div>
+                    <div class="question-text">麦克最后打算在这儿学习多长时间？</div>
                 </div>
                 <div class="question-section">
                     <div class="section-label options">请选择正确答案</div>
                     <div class="options-grid" data-question-id="2">
-                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">A</span><span class="option-text">生词都很多</span></div>
-                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">B</span><span class="option-text">生词都很少</span></div>
-                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">C</span><span class="option-text">课文都很长</span></div>
-                        <div class="option" data-correct="true" onclick="checkAnswer(this, true)"><span class="option-letter">D</span><span class="option-text">课文都很短</span></div>
+                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">A</span><span class="option-text">半年</span></div>
+                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">B</span><span class="option-text">一年</span></div>
+                        <div class="option" data-correct="true" onclick="checkAnswer(this, true)"><span class="option-letter">C</span><span class="option-text">一年半</span></div>
+                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">D</span><span class="option-text">两年</span></div>
                     </div>
                     <button class="slide-reveal-btn" onclick="revealAnswer()">公布答案</button>
                     <div class="feedback-message"></div>
                 </div>
             </div>
         </div>
+                    <div class="feedback-message"></div>
+                </div>
+            </div>
+        </div>
 
-        <!-- Question 3 -->
+<!-- Question 3 -->
         <div class="slide question-slide" data-slide="5">
             <div class="question-header">
                 <div class="question-number">3</div>
@@ -1674,6 +1670,29 @@
                     <h3>第一部分 · 句子理解</h3>
                     <div class="type">听力选择</div>
                 </div>
+            </div>
+            <div class="question-content">
+                <div class="question-section">
+                    <div class="section-label question">听力原文</div>
+                    <div class="context-text">王丽说："这套房子每月的房租是三千块，没有对面的那套便宜。"</div>
+                </div>
+                <div class="question-section">
+                    <div class="section-label question">问题</div>
+                    <div class="question-text">对面那套房子的房租可能是多少钱？</div>
+                </div>
+                <div class="question-section">
+                    <div class="section-label options">请选择正确答案</div>
+                    <div class="options-grid" data-question-id="3">
+                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">A</span><span class="option-text">三千五百块</span></div>
+                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">B</span><span class="option-text">三千块</span></div>
+                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">C</span><span class="option-text">两千五百块</span></div>
+                        <div class="option" data-correct="true" onclick="checkAnswer(this, true)"><span class="option-letter">D</span><span class="option-text">四千块</span></div>
+                    </div>
+                    <button class="slide-reveal-btn" onclick="revealAnswer()">公布答案</button>
+                    <div class="feedback-message"></div>
+                </div>
+            </div>
+        </div>
             </div>
             <div class="question-content">
                 <div class="question-section">
@@ -1702,7 +1721,7 @@
             </div>
         </div>
 
-        <!-- Question 4 -->
+<!-- Question 4 -->
         <div class="slide question-slide" data-slide="6">
             <div class="question-header">
                 <div class="question-number">4</div>
@@ -1710,6 +1729,29 @@
                     <h3>第一部分 · 句子理解</h3>
                     <div class="type">听力选择</div>
                 </div>
+            </div>
+            <div class="question-content">
+                <div class="question-section">
+                    <div class="section-label question">听力原文</div>
+                    <div class="context-text">妈妈说："我让你每天只看一个小时的电视，你不能再看了。"</div>
+                </div>
+                <div class="question-section">
+                    <div class="section-label question">问题</div>
+                    <div class="question-text">他为什么现在不能看电视了？</div>
+                </div>
+                <div class="question-section">
+                    <div class="section-label options">请选择正确答案</div>
+                    <div class="options-grid" data-question-id="4">
+                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">A</span><span class="option-text">他不喜欢看电视</span></div>
+                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">B</span><span class="option-text">电视坏了</span></div>
+                        <div class="option" data-correct="true" onclick="checkAnswer(this, true)"><span class="option-letter">C</span><span class="option-text">一个小时的时间到了</span></div>
+                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">D</span><span class="option-text">他该去睡觉了</span></div>
+                    </div>
+                    <button class="slide-reveal-btn" onclick="revealAnswer()">公布答案</button>
+                    <div class="feedback-message"></div>
+                </div>
+            </div>
+        </div>
             </div>
             <div class="question-content">
                 <div class="question-section">
@@ -1738,7 +1780,7 @@
             </div>
         </div>
 
-        <!-- Question 5 -->
+<!-- Question 5 -->
         <div class="slide question-slide" data-slide="7">
             <div class="question-header">
                 <div class="question-number">5</div>
@@ -1746,6 +1788,29 @@
                     <h3>第一部分 · 句子理解</h3>
                     <div class="type">听力选择</div>
                 </div>
+            </div>
+            <div class="question-content">
+                <div class="question-section">
+                    <div class="section-label question">听力原文</div>
+                    <div class="context-text">女的说："坐火车才四百多块。坐飞机的话，比坐火车贵八百多块呢。"</div>
+                </div>
+                <div class="question-section">
+                    <div class="section-label question">问题</div>
+                    <div class="question-text">坐飞机的票价大概是多少钱？</div>
+                </div>
+                <div class="question-section">
+                    <div class="section-label options">请选择正确答案</div>
+                    <div class="options-grid" data-question-id="5">
+                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">A</span><span class="option-text">四百块</span></div>
+                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">B</span><span class="option-text">八百块</span></div>
+                        <div class="option" data-correct="true" onclick="checkAnswer(this, true)"><span class="option-letter">C</span><span class="option-text">一千两百块</span></div>
+                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">D</span><span class="option-text">一千六百块</span></div>
+                    </div>
+                    <button class="slide-reveal-btn" onclick="revealAnswer()">公布答案</button>
+                    <div class="feedback-message"></div>
+                </div>
+            </div>
+        </div>
             </div>
             <div class="question-content">
                 <div class="question-section">
@@ -1774,7 +1839,7 @@
             </div>
         </div>
 
-        <!-- Question 6 -->
+<!-- Question 6 -->
         <div class="slide question-slide" data-slide="8">
             <div class="question-header">
                 <div class="question-number">6</div>
@@ -1782,6 +1847,29 @@
                     <h3>第一部分 · 句子理解</h3>
                     <div class="type">听力选择</div>
                 </div>
+            </div>
+            <div class="question-content">
+                <div class="question-section">
+                    <div class="section-label question">听力原文</div>
+                    <div class="context-text">老师说："北京今天的气温是十度，上海今天比北京高两度。"</div>
+                </div>
+                <div class="question-section">
+                    <div class="section-label question">问题</div>
+                    <div class="question-text">上海今天多少度？</div>
+                </div>
+                <div class="question-section">
+                    <div class="section-label options">请选择正确答案</div>
+                    <div class="options-grid" data-question-id="6">
+                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">A</span><span class="option-text">八度</span></div>
+                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">B</span><span class="option-text">十度</span></div>
+                        <div class="option" data-correct="true" onclick="checkAnswer(this, true)"><span class="option-letter">C</span><span class="option-text">十二度</span></div>
+                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">D</span><span class="option-text">二度</span></div>
+                    </div>
+                    <button class="slide-reveal-btn" onclick="revealAnswer()">公布答案</button>
+                    <div class="feedback-message"></div>
+                </div>
+            </div>
+        </div>
             </div>
             <div class="question-content">
                 <div class="question-section">
@@ -1810,7 +1898,7 @@
             </div>
         </div>
 
-        <!-- Question 7 -->
+<!-- Question 7 -->
         <div class="slide question-slide" data-slide="9">
             <div class="question-header">
                 <div class="question-number">7</div>
@@ -1818,6 +1906,29 @@
                     <h3>第一部分 · 句子理解</h3>
                     <div class="type">听力选择</div>
                 </div>
+            </div>
+            <div class="question-content">
+                <div class="question-section">
+                    <div class="section-label question">听力原文</div>
+                    <div class="context-text">一位老人说："我二十八岁跟她结婚，到现在都一起生活了三十几年了。"</div>
+                </div>
+                <div class="question-section">
+                    <div class="section-label question">问题</div>
+                    <div class="question-text">他现在大概多大年纪？</div>
+                </div>
+                <div class="question-section">
+                    <div class="section-label options">请选择正确答案</div>
+                    <div class="options-grid" data-question-id="7">
+                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">A</span><span class="option-text">二十八岁</span></div>
+                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">B</span><span class="option-text">三十岁</span></div>
+                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">C</span><span class="option-text">五十岁</span></div>
+                        <div class="option" data-correct="true" onclick="checkAnswer(this, true)"><span class="option-letter">D</span><span class="option-text">差不多六十岁</span></div>
+                    </div>
+                    <button class="slide-reveal-btn" onclick="revealAnswer()">公布答案</button>
+                    <div class="feedback-message"></div>
+                </div>
+            </div>
+        </div>
             </div>
             <div class="question-content">
                 <div class="question-section">
@@ -1846,7 +1957,7 @@
             </div>
         </div>
 
-        <!-- Question 8 -->
+<!-- Question 8 -->
         <div class="slide question-slide" data-slide="10">
             <div class="question-header">
                 <div class="question-number">8</div>
@@ -1854,6 +1965,29 @@
                     <h3>第一部分 · 句子理解</h3>
                     <div class="type">听力选择</div>
                 </div>
+            </div>
+            <div class="question-content">
+                <div class="question-section">
+                    <div class="section-label question">听力原文</div>
+                    <div class="context-text">男的说："我买东西还是喜欢去大商场，大商场的东西比小商店的好得多。"</div>
+                </div>
+                <div class="question-section">
+                    <div class="section-label question">问题</div>
+                    <div class="question-text">男的是什么意思？</div>
+                </div>
+                <div class="question-section">
+                    <div class="section-label options">请选择正确答案</div>
+                    <div class="options-grid" data-question-id="8">
+                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">A</span><span class="option-text">大商场的东西太贵了</span></div>
+                        <div class="option" data-correct="true" onclick="checkAnswer(this, true)"><span class="option-letter">B</span><span class="option-text">大商场的东西质量更好</span></div>
+                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">C</span><span class="option-text">他不喜欢买东西</span></div>
+                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">D</span><span class="option-text">小商店的东西比大商场好</span></div>
+                    </div>
+                    <button class="slide-reveal-btn" onclick="revealAnswer()">公布答案</button>
+                    <div class="feedback-message"></div>
+                </div>
+            </div>
+        </div>
             </div>
             <div class="question-content">
                 <div class="question-section">
@@ -1882,7 +2016,7 @@
             </div>
         </div>
 
-        <!-- Question 9 -->
+<!-- Question 9 -->
         <div class="slide question-slide" data-slide="11">
             <div class="question-header">
                 <div class="question-number">9</div>
@@ -1890,6 +2024,29 @@
                     <h3>第一部分 · 句子理解</h3>
                     <div class="type">听力选择</div>
                 </div>
+            </div>
+            <div class="question-content">
+                <div class="question-section">
+                    <div class="section-label question">听力原文</div>
+                    <div class="context-text">爷爷说："抽烟对身体不好，我从来不抽；喝酒嘛，少喝点儿对身体还是不错的。"</div>
+                </div>
+                <div class="question-section">
+                    <div class="section-label question">问题</div>
+                    <div class="question-text">关于爷爷的习惯，下面哪个是对的？</div>
+                </div>
+                <div class="question-section">
+                    <div class="section-label options">请选择正确答案</div>
+                    <div class="options-grid" data-question-id="9">
+                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">A</span><span class="option-text">爷爷抽烟，不喝酒</span></div>
+                        <div class="option" data-correct="true" onclick="checkAnswer(this, true)"><span class="option-letter">B</span><span class="option-text">爷爷不抽烟，喝一点儿酒</span></div>
+                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">C</span><span class="option-text">爷爷又抽烟又喝酒</span></div>
+                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">D</span><span class="option-text">爷爷不抽烟，也不喝酒</span></div>
+                    </div>
+                    <button class="slide-reveal-btn" onclick="revealAnswer()">公布答案</button>
+                    <div class="feedback-message"></div>
+                </div>
+            </div>
+        </div>
             </div>
             <div class="question-content">
                 <div class="question-section">
@@ -1918,7 +2075,7 @@
             </div>
         </div>
 
-        <!-- Question 10 -->
+<!-- Question 10 -->
         <div class="slide question-slide" data-slide="12">
             <div class="question-header">
                 <div class="question-number">10</div>
@@ -1926,6 +2083,29 @@
                     <h3>第一部分 · 句子理解</h3>
                     <div class="type">听力选择</div>
                 </div>
+            </div>
+            <div class="question-content">
+                <div class="question-section">
+                    <div class="section-label question">听力原文</div>
+                    <div class="context-text">山田说："飞机票我半年以前就买好了。早一点儿买的话，会便宜很多。"</div>
+                </div>
+                <div class="question-section">
+                    <div class="section-label question">问题</div>
+                    <div class="question-text">山田为什么半年前就买票？</div>
+                </div>
+                <div class="question-section">
+                    <div class="section-label options">请选择正确答案</div>
+                    <div class="options-grid" data-question-id="10">
+                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">A</span><span class="option-text">怕买不到票</span></div>
+                        <div class="option" data-correct="true" onclick="checkAnswer(this, true)"><span class="option-letter">B</span><span class="option-text">为了省钱，因为早买便宜</span></div>
+                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">C</span><span class="option-text">他想早点回国</span></div>
+                        <div class="option" onclick="checkAnswer(this, false)"><span class="option-letter">D</span><span class="option-text">朋友让他早点买</span></div>
+                    </div>
+                    <button class="slide-reveal-btn" onclick="revealAnswer()">公布答案</button>
+                    <div class="feedback-message"></div>
+                </div>
+            </div>
+        </div>
             </div>
             <div class="question-content">
                 <div class="question-section">
